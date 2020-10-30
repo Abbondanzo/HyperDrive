@@ -33,8 +33,13 @@ jobs:
           git add -f ./dist
           git status
 
-      - name: Make commit message and push
+      - name: Make commit message
         run: |
           git config --global user.name "GitHub Actions"
           git commit -m "Deployed to production (`date '+%F %T %Z'`)"
-          git push -f origin built
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: built

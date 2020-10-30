@@ -36,5 +36,5 @@ jobs:
       - name: Make commit message and push
         run: |
           git config --global user.name "GitHub Actions"
-          git commit -m "Deployed to production (`date '+%F %T %Z'`)" || true
-          git push origin built
+          git commit -m "Deployed to production (`date '+%F %T %Z'`)"
+          git push -f origin built

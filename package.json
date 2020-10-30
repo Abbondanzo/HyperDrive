@@ -1,0 +1,19 @@
+{
+  "name": "hyperdrive",
+  "version": "0.0.1",
+  "description": "Nostalgia factory",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "3d",
+    "canvas",
+    "retrowave"
+  ],
+  "author": "Peter Abbondanzo, Erin Mittmann",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.0.5"
+  }
+}

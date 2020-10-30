@@ -15,5 +15,8 @@
   "license": "MIT",
   "devDependencies": {
     "typescript": "^4.0.5"
+  },
+  "engines": {
+    "node": "12.x"
   }
 }

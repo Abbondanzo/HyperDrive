@@ -1,4 +1,4 @@
-import AbstractObject from "./object";
+import AbstractObject from "./Object";
 
 export default class Camera extends AbstractObject {
   constructor() {

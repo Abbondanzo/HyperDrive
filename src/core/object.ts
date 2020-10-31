@@ -1,4 +1,4 @@
-import Vector from "./math/vector";
+import Vector3 from "./math/Vector3";
 
 export default abstract class AbstractObject {
   isCamera: boolean;
@@ -9,9 +9,9 @@ export default abstract class AbstractObject {
   parent: AbstractObject | null;
   children: AbstractObject[];
   // Positioning
-  position: Vector;
-  rotation: Vector;
-  scale: Vector;
+  position: Vector3;
+  rotation: Vector3;
+  scale: Vector3;
 
   constructor() {
     this.isCamera = false;
@@ -22,9 +22,9 @@ export default abstract class AbstractObject {
     this.parent = null;
     this.children = [];
 
-    this.position = new Vector();
-    this.rotation = new Vector();
-    this.scale = new Vector(1, 1, 1);
+    this.position = new Vector3();
+    this.rotation = new Vector3();
+    this.scale = new Vector3(1, 1, 1);
   }
 
   add(object: AbstractObject) {

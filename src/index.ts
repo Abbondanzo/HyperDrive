@@ -1,4 +1,7 @@
+import SceneManager from "./scene/SceneManager";
+
 document.addEventListener("DOMContentLoaded", () => {
-  // TODO: Build scene
-  document.body.innerHTML = "Hello World!";
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  const sceneManager = new SceneManager(canvas);
+  sceneManager.render();
 });

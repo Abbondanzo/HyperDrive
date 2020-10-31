@@ -4,7 +4,8 @@
   "description": "Nostalgia factory",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "tsc --watch"
   },
   "keywords": [
     "3d",

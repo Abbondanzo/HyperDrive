@@ -1,4 +1,4 @@
-import Vector from "./primitives/vector";
+import Vector from "./math/vector";
 
 export default abstract class AbstractObject {
   isCamera: boolean;

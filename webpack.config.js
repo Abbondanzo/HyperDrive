@@ -79,6 +79,7 @@ module.exports = {
         exclude: /node_modules/,
         use: ["babel-loader", "ts-loader"],
       },
+      { test: /\.(glsl)$/, use: "raw-loader" },
     ],
   },
 

@@ -1,6 +1,7 @@
 import { Camera } from "../Camera";
 import { AbstractObject } from "../Object";
 import { Scene } from "../Scene";
+import { BasicProgram } from "./BasicProgram";
 import { Renderer } from "./Renderer";
 
 interface RenderItems {
@@ -10,17 +11,11 @@ interface RenderItems {
 
 export class BufferRenderer implements Renderer {
   private readonly gl: WebGLRenderingContext;
-  private readonly attributeCoords: number;
-  private readonly attributeNormals: number;
-  private readonly bufferCoords: WebGLBuffer;
-  private readonly normalBuffer: WebGLBuffer;
-  private readonly uniformColor: WebGLUniformLocation;
-  private readonly uniformWorldViewProjection: WebGLUniformLocation;
-  private readonly uniformWorldInverseTranspose: WebGLUniformLocation;
-  private readonly uniformReverseLightDirectionLocation: WebGLUniformLocation;
+  private readonly program: BasicProgram;
 
   constructor(canvas: HTMLCanvasElement) {
     this.gl = canvas.getContext("webgl");
+    this.program = new BasicProgram(this.gl);
   }
 
   render(scene: Scene, camera: Camera) {
@@ -36,6 +31,8 @@ export class BufferRenderer implements Renderer {
   private addToRenderItems(object: AbstractObject, renderItems: RenderItems) {
     if (object.isLight) {
       renderItems.lights.push(object);
+    } else if (object.isCamera) {
+      // pass
     } else {
       renderItems.objects.push(object);
     }

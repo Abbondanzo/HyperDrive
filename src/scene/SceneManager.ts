@@ -1,12 +1,26 @@
-export default class SceneManager {
-  canvas: HTMLCanvasElement;
+import { BufferRenderer, Renderer } from "../core/renderers";
+import { Scene } from "../core/Scene";
+import CameraManager from "./CameraManager";
 
+class SceneManager {
+  readonly canvas: HTMLCanvasElement;
+  private readonly scene: Scene;
+
+  // Delta enforcement
   private renderInterval: number | null;
   static FRAME_RATE_PER_SECOND = 30;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
+  // Housekeeping
+  private readonly renderer: Renderer;
+
+  constructor() {
+    this.canvas = document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "canvas"
+    ) as HTMLCanvasElement;
+    this.scene = new Scene();
     this.renderInterval = null;
+    this.renderer = new BufferRenderer(this.canvas);
     // Scoping
     this.update = this.update.bind(this);
     // Bind this manager to the window
@@ -27,5 +41,10 @@ export default class SceneManager {
     this.renderInterval = null;
   }
 
-  private update() {}
+  private update() {
+    this.renderer.render(this.scene, CameraManager.camera);
+  }
 }
+
+// Export single class instance
+export default new SceneManager();

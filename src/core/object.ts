@@ -1,6 +1,6 @@
-import Vector3 from "./math/Vector3";
+import { Vector3 } from "./math/Vector3";
 
-export default abstract class AbstractObject {
+export abstract class AbstractObject {
   isCamera: boolean;
   isLight: boolean;
   name: string;

@@ -1,10 +1,12 @@
-import AbstractObject from "./Object";
+import { AbstractObject } from "./Object";
 
-export default class Camera extends AbstractObject {
+export class Camera extends AbstractObject {
+  static TYPE = "camera";
+
   constructor() {
     super();
     this.isCamera = true;
     this.name = "Camera";
-    this.type = "camera";
+    this.type = Camera.TYPE;
   }
 }

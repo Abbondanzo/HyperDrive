@@ -30,7 +30,7 @@ export class Matrix4 {
       xAxis.x, xAxis.y, xAxis.z, 0,
       yAxis.x, yAxis.y, yAxis.z, 0,
       zAxis.x, zAxis.y, zAxis.z, 0,
-      root.x, root.y, root.z, 1
+      root.x,  root.y,  root.z,  1
     ]);
   }
 }

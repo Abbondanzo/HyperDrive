@@ -1,7 +1,7 @@
 import { Camera } from "../Camera";
 import { AbstractObject } from "../Object";
 import { Scene } from "../Scene";
-import { BasicProgram } from "./BasicProgram";
+import { BasicProgram } from "../shaders/BasicProgram";
 import { Renderer } from "./Renderer";
 
 interface RenderItems {
@@ -20,6 +20,7 @@ export class BufferRenderer implements Renderer {
 
   render(scene: Scene, camera: Camera) {
     const renderItems = this.toRenderItems(scene);
+    camera;
   }
 
   private toRenderItems(scene: Scene): RenderItems {

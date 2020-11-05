@@ -9,7 +9,6 @@ export abstract class AbstractObject {
   name: string;
   type: string;
   // Hierarchy relationship
-  parent: AbstractObject | null;
   children: AbstractObject[];
   // Positioning
   position: Vector3;
@@ -22,7 +21,6 @@ export abstract class AbstractObject {
     this.name = "";
     this.type = "object";
 
-    this.parent = null;
     this.children = [];
 
     this.position = new Vector3();
@@ -31,9 +29,6 @@ export abstract class AbstractObject {
   }
 
   add(object: AbstractObject) {
-    if (object.parent !== null) {
-      object.parent.remove(object);
-    }
     this.children.push(object);
   }
 
@@ -48,6 +43,7 @@ export abstract class AbstractObject {
     } else {
       rotationMatrix = Matrix4.lookAt(target, this.position, UP);
     }
+    this.rotation = rotationMatrix;
   }
 
   rotate(axis: "x" | "y" | "z", angleRadians: number) {

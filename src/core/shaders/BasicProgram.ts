@@ -1,18 +1,22 @@
-import fragmentShaderSource from "../shaders/basic_fragment.glsl";
-import vertexShaderSource from "../shaders/basic_vertex.glsl";
+import { Matrix4 } from "../math/Matrix4";
+import fragmentShaderSource from "./basic_fragment.glsl";
+import vertexShaderSource from "./basic_vertex.glsl";
 
 export class BasicProgram {
   readonly program: WebGLProgram;
+  private readonly gl: WebGLRenderingContext;
 
   // Vertex shader stuffs
-  readonly uniformProjectionMatrix: WebGLUniformLocation;
-  readonly uniformModelViewMatrix: WebGLUniformLocation;
-  readonly uniformNormalMatrix: WebGLUniformLocation;
+  private readonly uniformProjectionMatrix: WebGLUniformLocation;
+  private readonly uniformModelViewMatrix: WebGLUniformLocation;
+  private readonly uniformNormalMatrix: WebGLUniformLocation;
 
-  readonly attributePosition: number;
-  readonly attributeNormals: number;
+  private readonly attributePosition: number;
+  private readonly attributeNormals: number;
 
   constructor(gl: WebGLRenderingContext) {
+    this.gl = gl;
+
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertexShader, vertexShaderSource);
     gl.compileShader(vertexShader);
@@ -44,5 +48,27 @@ export class BasicProgram {
     gl.enableVertexAttribArray(this.attributePosition);
     this.attributeNormals = gl.getAttribLocation(program, "a_normals");
     gl.enableVertexAttribArray(this.attributeNormals);
+  }
+
+  setProjectionMatrix(projectionMatrix: Matrix4) {
+    this.gl.uniformMatrix4fv(
+      this.uniformProjectionMatrix,
+      false,
+      projectionMatrix.getValues()
+    );
+  }
+
+  setModelViewMatrix(modelViewMatrix: Matrix4) {
+    this.gl.uniformMatrix4fv(
+      this.uniformModelViewMatrix,
+      false,
+      modelViewMatrix.getValues()
+    );
+    const normalMatrix = modelViewMatrix.copy().inverse().transpose();
+    this.gl.uniformMatrix4fv(
+      this.uniformNormalMatrix,
+      false,
+      normalMatrix.getValues()
+    );
   }
 }

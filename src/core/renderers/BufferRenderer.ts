@@ -21,7 +21,7 @@ export class BufferRenderer implements Renderer {
   render(scene: Scene, camera: Camera) {
     const { objects, lights } = this.toRenderItems(scene);
     objects.forEach((object) => {
-      this.program.setModelViewMatrix(object.getModelViewMatrix());
+      this.program.setModelViewMatrix(object.modelViewMatrix);
     });
     camera;
   }

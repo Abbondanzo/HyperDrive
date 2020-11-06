@@ -1,4 +1,5 @@
-import { Matrix4 } from "../math/Matrix4";
+import { mat4 } from "gl-matrix";
+
 import fragmentShaderSource from "./basic_fragment.glsl";
 import vertexShaderSource from "./basic_vertex.glsl";
 
@@ -50,25 +51,26 @@ export class BasicProgram {
     gl.enableVertexAttribArray(this.attributeNormals);
   }
 
-  setProjectionMatrix(projectionMatrix: Matrix4) {
+  setProjectionMatrix(projectionMatrix: mat4) {
     this.gl.uniformMatrix4fv(
       this.uniformProjectionMatrix,
       false,
-      projectionMatrix.getValues()
+      projectionMatrix
     );
   }
 
-  setModelViewMatrix(modelViewMatrix: Matrix4) {
+  setModelViewMatrix(modelViewMatrix: mat4) {
     this.gl.uniformMatrix4fv(
       this.uniformModelViewMatrix,
       false,
-      modelViewMatrix.getValues()
+      modelViewMatrix
     );
-    const normalMatrix = modelViewMatrix.copy().inverse().transpose();
-    this.gl.uniformMatrix4fv(
-      this.uniformNormalMatrix,
-      false,
-      normalMatrix.getValues()
-    );
+    const normalMatrix = this.toNormalMatrix(modelViewMatrix);
+    this.gl.uniformMatrix4fv(this.uniformNormalMatrix, false, normalMatrix);
+  }
+
+  private toNormalMatrix(matrix: mat4) {
+    let M = mat4.invert(mat4.create(), matrix);
+    return mat4.transpose(mat4.create(), M);
   }
 }

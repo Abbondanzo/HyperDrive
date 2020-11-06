@@ -1,7 +1,6 @@
-import { Vector3 } from "./math/Vector3";
-import { Matrix4 } from "./math/Matrix4";
+import { mat4, vec3 } from "gl-matrix";
 
-const UP = new Vector3(0, 1, 0);
+const UP = vec3.fromValues(0, 1, 0);
 
 export abstract class AbstractObject {
   isCamera: boolean;
@@ -11,9 +10,10 @@ export abstract class AbstractObject {
   // Hierarchy relationship
   children: AbstractObject[];
   // Positioning
-  position: Vector3;
-  rotation: Matrix4;
-  scale: Vector3;
+  modelViewMatrix: mat4;
+  private position: vec3;
+  private rotation: mat4;
+  private scale: vec3;
 
   constructor() {
     this.isCamera = false;
@@ -23,9 +23,10 @@ export abstract class AbstractObject {
 
     this.children = [];
 
-    this.position = new Vector3();
-    this.rotation = Matrix4.scaling(0, 0, 0);
-    this.scale = new Vector3(1, 1, 1);
+    this.position = vec3.zero(vec3.create());
+    this.rotation = mat4.create();
+    this.scale = vec3.fromValues(1, 1, 1);
+    this.computeModelViewMatrix();
   }
 
   add(object: AbstractObject) {
@@ -36,17 +37,33 @@ export abstract class AbstractObject {
     this.children = this.children.filter((obj) => obj === object);
   }
 
-  lookAt(target: Vector3) {
-    let rotationMatrix: Matrix4;
+  lookAt(target: vec3) {
+    let rotationMatrix: mat4;
     if (this.isCamera || this.isLight) {
-      rotationMatrix = Matrix4.lookAt(this.position, target, UP);
+      rotationMatrix = mat4.lookAt(mat4.create(), this.position, target, UP);
     } else {
-      rotationMatrix = Matrix4.lookAt(target, this.position, UP);
+      rotationMatrix = mat4.lookAt(mat4.create(), target, this.position, UP);
     }
     this.rotation = rotationMatrix;
+    this.computeModelViewMatrix();
   }
 
   rotate(axis: "x" | "y" | "z", angleRadians: number) {
-    this.rotation.rotate(axis, angleRadians);
+    if (axis === "x") {
+      this.rotation = mat4.rotateX(mat4.create(), this.rotation, angleRadians);
+    } else if (axis === "y") {
+      this.rotation = mat4.rotateY(mat4.create(), this.rotation, angleRadians);
+    } else {
+      this.rotation = mat4.rotateZ(mat4.create(), this.rotation, angleRadians);
+    }
+    this.computeModelViewMatrix();
+  }
+
+  private computeModelViewMatrix() {
+    let M = mat4.create();
+    M = mat4.scale(mat4.create(), M, this.scale);
+    M = mat4.multiply(mat4.create(), M, this.rotation);
+    M = mat4.translate(mat4.create(), M, this.position);
+    this.modelViewMatrix = M;
   }
 }

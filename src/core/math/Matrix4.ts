@@ -21,7 +21,8 @@ export class Matrix4 {
     return new Matrix4();
   }
 
-  static scaling(x: number, y: number, z: number): Matrix4 {
+  static scaling(vector: Vector3): Matrix4 {
+    const { x, y, z } = vector;
     // prettier-ignore
     return new Matrix4([
       x, 0, 0, 0,
@@ -78,6 +79,17 @@ export class Matrix4 {
       0,  0, 1, 0,
       0,  0, 0, 1,
     ]);
+  }
+
+  static translation(vector: Vector3): Matrix4 {
+    const { x, y, z } = vector;
+    // prettier-ignore
+    return new Matrix4([
+      1, 0, 0, x,
+      0, 1, 0, y,
+      0, 0, 1, z,
+      0, 0, 0, 1
+    ])
   }
 
   copy(): Matrix4 {

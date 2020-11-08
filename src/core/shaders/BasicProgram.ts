@@ -3,9 +3,18 @@ import { mat4 } from "gl-matrix";
 import fragmentShaderSource from "./basic_fragment.glsl";
 import vertexShaderSource from "./basic_vertex.glsl";
 
+const DIMENSIONS = 3;
+
+/**
+ * This entire class's purpose is for exploring how to set up a scene and
+ * manage data buffers. Do not use in normal code.
+ */
 export class BasicProgram {
   readonly program: WebGLProgram;
   private readonly gl: WebGLRenderingContext;
+
+  private readonly positionCount: number;
+  private readonly positionBuffer: WebGLBuffer;
 
   // Vertex shader stuffs
   private readonly uniformProjectionMatrix: WebGLUniformLocation;
@@ -15,7 +24,7 @@ export class BasicProgram {
   private readonly attributePosition: number;
   private readonly attributeNormals: number;
 
-  constructor(gl: WebGLRenderingContext) {
+  constructor(gl: WebGLRenderingContext, data: Float32Array) {
     this.gl = gl;
 
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -31,10 +40,9 @@ export class BasicProgram {
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-    gl.useProgram(program);
     this.program = program;
 
-    // Assign uniforms and attributes
+    // Assign uniform and attribute locations
     this.uniformProjectionMatrix = gl.getUniformLocation(
       program,
       "u_projectionMatrix"
@@ -44,11 +52,40 @@ export class BasicProgram {
       "u_modelViewMatrix"
     );
     this.uniformNormalMatrix = gl.getUniformLocation(program, "u_normalMatrix");
-
     this.attributePosition = gl.getAttribLocation(program, "a_position");
-    gl.enableVertexAttribArray(this.attributePosition);
     this.attributeNormals = gl.getAttribLocation(program, "a_normals");
-    gl.enableVertexAttribArray(this.attributeNormals);
+
+    // Create data buffers
+    this.positionCount = data.length / DIMENSIONS;
+    this.positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+  }
+
+  bind() {
+    if (this.gl.getParameter(this.gl.CURRENT_PROGRAM) !== this.program) {
+      this.gl.useProgram(this.program);
+    }
+
+    this.enableVertexAttribute(this.attributePosition);
+    this.enableVertexAttribute(this.attributeNormals);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+  }
+
+  draw() {
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.positionCount);
+  }
+
+  private enableVertexAttribute(attributeIndex: number) {
+    this.gl.enableVertexAttribArray(attributeIndex);
+    this.gl.vertexAttribPointer(
+      attributeIndex,
+      DIMENSIONS, // dimensions
+      this.gl.FLOAT, // type
+      false, // normalized
+      0, // stride
+      0 // offset
+    );
   }
 
   setProjectionMatrix(projectionMatrix: mat4) {

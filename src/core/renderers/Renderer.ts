@@ -1,46 +1,75 @@
-import { Camera } from "../Camera";
+import { Camera } from "../objects/Camera";
 import { AbstractObject } from "../Object";
 import { Scene } from "../Scene";
-import { BasicProgram } from "../shaders/BasicProgram";
+import { BasicProgram } from "../programs/BasicProgram";
+import { Mesh } from "../objects/Mesh";
+import { Light } from "../objects/Light";
 
 interface RenderItems {
-  objects: AbstractObject[];
-  lights: AbstractObject[];
+  objects: Mesh[];
+  lights: Light[];
 }
 
 export class Renderer {
   private readonly gl: WebGLRenderingContext;
-  private readonly program: BasicProgram;
+  private readonly programs: WeakMap<Mesh, BasicProgram>;
 
   constructor(canvas: HTMLCanvasElement) {
     this.gl = canvas.getContext("webgl");
-    this.program = new BasicProgram(this.gl, new Float32Array([]));
+    this.programs = new WeakMap();
   }
 
   render(scene: Scene, camera: Camera) {
     const { objects, lights } = this.toRenderItems(scene);
     objects.forEach((object) => {
-      this.program.setModelViewMatrix(object.modelViewMatrix);
+      const program = this.getProgram(object);
+      program.setModelViewMatrix(object.modelViewMatrix);
+      program.setProjectionMatrix(camera.modelViewMatrix);
+      // TODO: Pass lights array to program
+      program.bind();
+      program.draw();
     });
-    camera;
   }
 
   private toRenderItems(scene: Scene): RenderItems {
     const renderItems: RenderItems = { objects: [], lights: [] };
-    this.addToRenderItems(scene, renderItems);
+    this.toRenderItemsHelper(scene, renderItems);
     return renderItems;
   }
 
-  private addToRenderItems(object: AbstractObject, renderItems: RenderItems) {
-    if (object.isLight) {
-      renderItems.lights.push(object);
-    } else if (object.isCamera) {
-      // pass
-    } else {
-      renderItems.objects.push(object);
+  private toRenderItemsHelper(
+    object: AbstractObject,
+    renderItems: RenderItems
+  ) {
+    switch (object.type) {
+      case Light.TYPE:
+        renderItems.lights.push(object as Light);
+        break;
+      case Camera.TYPE:
+        break;
+      case Mesh.TYPE:
+        renderItems.objects.push(object as Mesh);
+        break;
+      default:
+        console.error(`Unsupported object type provided from ${object}`);
     }
     object.children.forEach((child) =>
-      this.addToRenderItems(child, renderItems)
+      this.toRenderItemsHelper(child, renderItems)
     );
+  }
+
+  private getProgram(object: Mesh): BasicProgram {
+    let program = this.programs.get(object);
+    if (program) {
+      return program;
+    } else {
+      program = BasicProgram.fromMesh(
+        this.gl,
+        object.geometry,
+        object.material
+      );
+      this.programs.set(object, program);
+      return program;
+    }
   }
 }

@@ -53,7 +53,7 @@ export abstract class AbstractObject {
       this.rotation = mat4.rotateX(mat4.create(), this.rotation, angleRadians);
     } else if (axis === "y") {
       this.rotation = mat4.rotateY(mat4.create(), this.rotation, angleRadians);
-    } else {
+    } else if (axis === "z") {
       this.rotation = mat4.rotateZ(mat4.create(), this.rotation, angleRadians);
     }
     this.computeModelViewMatrix();

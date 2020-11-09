@@ -1,4 +1,4 @@
-import { AbstractObject } from "./Object";
+import { AbstractObject } from "../Object";
 
 export class Camera extends AbstractObject {
   static TYPE = "camera";

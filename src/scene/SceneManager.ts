@@ -1,4 +1,4 @@
-import { BufferRenderer, Renderer } from "../core/renderers";
+import { Renderer } from "../core/renderers";
 import { Scene } from "../core/Scene";
 import CameraManager from "./CameraManager";
 
@@ -20,7 +20,7 @@ class SceneManager {
     ) as HTMLCanvasElement;
     this.scene = new Scene();
     this.renderInterval = null;
-    this.renderer = new BufferRenderer(this.canvas);
+    this.renderer = new Renderer(this.canvas);
     // Scoping
     this.update = this.update.bind(this);
     // Bind this manager to the window

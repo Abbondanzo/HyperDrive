@@ -1,4 +1,4 @@
-import { Camera } from "../core/Camera";
+import { Camera } from "../core/objects/Camera";
 
 /**
  * Houses all logic regarding the main camera.

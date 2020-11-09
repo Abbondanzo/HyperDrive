@@ -1,7 +1,9 @@
 import { mat4 } from "gl-matrix";
+import { Geometry } from "../objects/Geometry";
+import { Material } from "../objects/Material";
 
-import fragmentShaderSource from "./basic_fragment.glsl";
-import vertexShaderSource from "./basic_vertex.glsl";
+import fragmentShaderSource from "../shaders/basic_fragment.glsl";
+import vertexShaderSource from "../shaders/basic_vertex.glsl";
 
 const DIMENSIONS = 3;
 
@@ -24,7 +26,7 @@ export class BasicProgram {
   private readonly attributePosition: number;
   private readonly attributeNormals: number;
 
-  constructor(gl: WebGLRenderingContext, data: Float32Array) {
+  private constructor(gl: WebGLRenderingContext, data: Float32Array) {
     this.gl = gl;
 
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -60,6 +62,14 @@ export class BasicProgram {
     this.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+  }
+
+  static fromMesh(
+    gl: WebGLRenderingContext,
+    geometry: Geometry,
+    material: Material
+  ): BasicProgram {
+    return new BasicProgram(gl, geometry.vertices);
   }
 
   bind() {

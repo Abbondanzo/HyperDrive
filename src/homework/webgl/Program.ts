@@ -1,5 +1,6 @@
 import { Color } from "../../core/data/Color";
 import { Mesh } from "../../core/objects/Mesh";
+import m4 from "../common/util/m4";
 
 const DIMENSIONS = 3;
 
@@ -7,11 +8,11 @@ export class Program {
   private readonly gl: WebGLRenderingContext;
   private readonly program: WebGLProgram;
 
-  //   private attributePosition: number;
-  //   private positionBuffer: WebGLBuffer;
+  private attributePosition: number;
+  private positionBuffer: WebGLBuffer;
 
-  //   private attributeNormals: number;
-  //   private normalBuffer: WebGLBuffer;
+  private attributeNormals: number;
+  private normalBuffer: WebGLBuffer;
 
   private readonly uniformColor: WebGLUniformLocation;
   private readonly uniformWorldViewProjection: WebGLUniformLocation;
@@ -23,6 +24,18 @@ export class Program {
     this.program = program;
 
     this.uniformColor = this.gl.getUniformLocation(program, "u_color");
+    this.uniformWorldViewProjection = this.gl.getUniformLocation(
+      program,
+      "u_worldViewProjection"
+    );
+    this.uniformWorldInverseTranspose = this.gl.getUniformLocation(
+      program,
+      "u_worldInverseTranspose"
+    );
+    this.uniformReverseLightDirectionLocation = this.gl.getUniformLocation(
+      program,
+      "u_reverseLightDirection"
+    );
   }
 
   bind(mesh: Mesh) {
@@ -44,6 +57,29 @@ export class Program {
       0,
       mesh.geometry.vertices.length / DIMENSIONS
     );
+  }
+
+  applyProjection(viewProjectionMatrix: number[], modelViewMatrix: number[]) {
+    const worldInverseTransposeMatrix = m4.transpose(m4.identity());
+    this.gl.uniformMatrix4fv(
+      this.uniformWorldViewProjection,
+      false,
+      viewProjectionMatrix
+    );
+    this.gl.uniformMatrix4fv(
+      this.uniformWorldInverseTranspose,
+      false,
+      worldInverseTransposeMatrix
+    );
+    this.gl.uniformMatrix4fv(
+      this.uniformWorldViewProjection,
+      false,
+      modelViewMatrix
+    );
+  }
+
+  applyReverseLight(direction: number[]) {
+    this.gl.uniform3fv(this.uniformReverseLightDirectionLocation, direction);
   }
 
   private bufferData(attribName: string, data: Float32Array) {

@@ -29,13 +29,16 @@ export class BasicProgram {
   private constructor(gl: WebGLRenderingContext, data: Float32Array) {
     this.gl = gl;
 
-    const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, vertexShaderSource);
-    gl.compileShader(vertexShader);
-
-    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, fragmentShaderSource);
-    gl.compileShader(fragmentShader);
+    const vertexShader = BasicProgram.createShader(
+      gl,
+      gl.VERTEX_SHADER,
+      vertexShaderSource
+    );
+    const fragmentShader = BasicProgram.createShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      fragmentShaderSource
+    );
 
     // Link the two shaders into a program
     const program = gl.createProgram();
@@ -119,5 +122,25 @@ export class BasicProgram {
   private toNormalMatrix(matrix: mat4) {
     let M = mat4.invert(mat4.create(), matrix);
     return mat4.transpose(mat4.create(), M);
+  }
+
+  // HAHA companion object
+  private static createShader(
+    gl: WebGLRenderingContext,
+    type: number,
+    source: string
+  ) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+
+    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (success) {
+      return shader;
+    }
+
+    console.log(gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
   }
 }

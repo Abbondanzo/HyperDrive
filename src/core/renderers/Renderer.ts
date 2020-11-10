@@ -23,10 +23,10 @@ export class Renderer {
     const { objects, lights } = this.toRenderItems(scene);
     objects.forEach((object) => {
       const program = this.getProgram(object);
+      program.bind();
       program.setModelViewMatrix(object.modelViewMatrix);
       program.setProjectionMatrix(camera.modelViewMatrix);
       // TODO: Pass lights array to program
-      program.bind();
       program.draw();
     });
   }
@@ -45,13 +45,13 @@ export class Renderer {
       case Light.TYPE:
         renderItems.lights.push(object as Light);
         break;
-      case Camera.TYPE:
-        break;
       case Mesh.TYPE:
         renderItems.objects.push(object as Mesh);
         break;
+      case Scene.TYPE:
+      case Camera.TYPE:
       default:
-        console.error(`Unsupported object type provided from ${object}`);
+        break;
     }
     object.children.forEach((child) =>
       this.toRenderItemsHelper(child, renderItems)

@@ -4,7 +4,7 @@ import CameraManager from "./CameraManager";
 
 class SceneManager {
   readonly canvas: HTMLCanvasElement;
-  private readonly scene: Scene;
+  readonly scene: Scene;
 
   // Delta enforcement
   private renderInterval: number | null;
@@ -42,7 +42,12 @@ class SceneManager {
   }
 
   private update() {
-    this.renderer.render(this.scene, CameraManager.camera);
+    try {
+      this.renderer.render(this.scene, CameraManager.camera);
+    } catch (error) {
+      console.warn(error);
+      this.stop();
+    }
   }
 }
 

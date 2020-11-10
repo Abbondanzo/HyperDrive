@@ -29,6 +29,8 @@ class SceneManager {
       throw Error("Cannot have more than one scene manager!");
     }
     w.manager = this;
+    // Add global camera
+    this.scene.add(CameraManager.camera);
   }
 
   render() {

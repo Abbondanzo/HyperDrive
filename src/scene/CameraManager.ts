@@ -9,7 +9,7 @@ class CameraManager {
   readonly camera: Camera;
 
   constructor() {
-    this.camera = new Camera();
+    this.camera = new Camera({ fovRadians: 60 * (Math.PI / 180), aspect: 2 });
   }
 }
 

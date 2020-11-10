@@ -11,9 +11,9 @@ export abstract class AbstractObject {
   children: AbstractObject[];
   // Positioning
   modelViewMatrix: mat4;
-  private position: vec3;
-  private rotation: mat4;
-  private scale: vec3;
+  position: vec3;
+  rotation: mat4;
+  scale: vec3;
 
   constructor() {
     this.isCamera = false;
@@ -26,7 +26,7 @@ export abstract class AbstractObject {
     this.position = vec3.zero(vec3.create());
     this.rotation = mat4.create();
     this.scale = vec3.fromValues(1, 1, 1);
-    this.computeModelViewMatrix();
+    this.updateModelViewMatrix();
   }
 
   add(object: AbstractObject) {
@@ -45,7 +45,7 @@ export abstract class AbstractObject {
       rotationMatrix = mat4.lookAt(mat4.create(), target, this.position, UP);
     }
     this.rotation = rotationMatrix;
-    this.computeModelViewMatrix();
+    this.updateModelViewMatrix();
   }
 
   rotate(axis: "x" | "y" | "z", angleRadians: number) {
@@ -56,10 +56,10 @@ export abstract class AbstractObject {
     } else if (axis === "z") {
       this.rotation = mat4.rotateZ(mat4.create(), this.rotation, angleRadians);
     }
-    this.computeModelViewMatrix();
+    this.updateModelViewMatrix();
   }
 
-  private computeModelViewMatrix() {
+  updateModelViewMatrix() {
     let M = mat4.create();
     M = mat4.scale(mat4.create(), M, this.scale);
     M = mat4.multiply(mat4.create(), M, this.rotation);

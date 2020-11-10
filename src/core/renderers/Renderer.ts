@@ -21,11 +21,17 @@ export class Renderer {
 
   render(scene: Scene, camera: Camera) {
     const { objects, lights } = this.toRenderItems(scene);
+
+    camera.updateModelViewMatrix();
+    camera.updateProjectionMatrix();
+
     objects.forEach((object) => {
+      object.updateModelViewMatrix();
+
       const program = this.getProgram(object);
       program.bind();
       program.setModelViewMatrix(object.modelViewMatrix);
-      program.setProjectionMatrix(camera.modelViewMatrix);
+      program.setProjectionMatrix(camera.projectionMatrix);
       // TODO: Pass lights array to program
       program.draw();
     });

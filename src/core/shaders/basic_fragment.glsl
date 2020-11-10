@@ -10,6 +10,6 @@ void main() {
     vec3 normal = normalize(v_normal);
     float light = dot(normal, u_reverseLightDirection);
 
-    gl_FragColor = u_color;
-    gl_FragColor.rgb *= light;
+    gl_FragColor = vec4(0, 0, 0, 1);
+    // gl_FragColor.rgb *= light;
 }

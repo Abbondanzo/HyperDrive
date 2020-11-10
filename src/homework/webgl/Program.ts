@@ -1,6 +1,9 @@
 import { Color } from "../../core/data/Color";
 import { Mesh } from "../../core/objects/Mesh";
+import { createProgramFromScripts } from "../common/setup/createProgramFromScripts";
 import m4 from "../common/util/m4";
+import fragmentShaderSource from "../shaders/basic_fragment.glsl";
+import vertexShaderSource from "../shaders/basic_vertex.glsl";
 
 const DIMENSIONS = 3;
 
@@ -19,21 +22,21 @@ export class Program {
   private readonly uniformWorldInverseTranspose: WebGLUniformLocation;
   private readonly uniformReverseLightDirectionLocation: WebGLUniformLocation;
 
-  constructor(gl: WebGLRenderingContext, program: WebGLProgram) {
+  constructor(gl: WebGLRenderingContext) {
     this.gl = gl;
-    this.program = program;
+    this.program = Program.getProgram(gl);
 
-    this.uniformColor = this.gl.getUniformLocation(program, "u_color");
+    this.uniformColor = this.gl.getUniformLocation(this.program, "u_color");
     this.uniformWorldViewProjection = this.gl.getUniformLocation(
-      program,
+      this.program,
       "u_worldViewProjection"
     );
     this.uniformWorldInverseTranspose = this.gl.getUniformLocation(
-      program,
+      this.program,
       "u_worldInverseTranspose"
     );
     this.uniformReverseLightDirectionLocation = this.gl.getUniformLocation(
-      program,
+      this.program,
       "u_reverseLightDirection"
     );
   }
@@ -109,5 +112,15 @@ export class Program {
       color.blue / 255,
       1
     );
+  }
+
+  private static getProgram(gl: WebGLRenderingContext): WebGLProgram {
+    const program = createProgramFromScripts(
+      gl,
+      vertexShaderSource,
+      fragmentShaderSource
+    );
+    gl.useProgram(program);
+    return program;
   }
 }

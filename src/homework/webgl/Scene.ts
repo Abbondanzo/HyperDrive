@@ -32,7 +32,7 @@ export default class Scene {
       fragmentShaderSource
     );
     this.gl.useProgram(program);
-    this.tempProgram = new Program(this.gl, program);
+    this.tempProgram = new Program(this.gl);
 
     // // Set up coordinate attributes for sending to each vertex
     // this.attributeCoords = this.gl.getAttribLocation(program, "a_coords");

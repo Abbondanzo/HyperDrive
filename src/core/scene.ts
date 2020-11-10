@@ -1,9 +1,11 @@
-import AbstractObject from "./object";
+import { AbstractObject } from "./Object";
 
-export default class Scene extends AbstractObject {
+export class Scene extends AbstractObject {
+  static TYPE = "scene";
+
   constructor() {
     super();
     this.name = "Scene";
-    this.type = "scene";
+    this.type = Scene.TYPE;
   }
 }

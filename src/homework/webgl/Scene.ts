@@ -1,4 +1,3 @@
-import { Mesh } from "../../core/objects/Mesh";
 import { renderShape } from "../common/render";
 import { Cube } from "../common/render/cube";
 import { createProgramFromScripts } from "../common/setup/createProgramFromScripts";
@@ -17,11 +16,35 @@ export default class Scene {
   private readonly bufferCoords: WebGLBuffer;
   private readonly normalBuffer: WebGLBuffer;
 
-  private readonly programs: WeakMap<Mesh, Program>;
+  private readonly tempProgram: Program;
 
-  private constructor(canvas: HTMLCanvasElement) {
+  private constructor(
+    canvas: HTMLCanvasElement,
+    vertexShaderSource: string,
+    fragmentShaderSource: string
+  ) {
     this.gl = canvas.getContext("webgl");
-    this.programs = new WeakMap();
+
+    // create and use a GLSL program
+    const program = createProgramFromScripts(
+      this.gl,
+      vertexShaderSource,
+      fragmentShaderSource
+    );
+    this.gl.useProgram(program);
+    this.tempProgram = new Program(this.gl, program);
+
+    // // Set up coordinate attributes for sending to each vertex
+    // this.attributeCoords = this.gl.getAttribLocation(program, "a_coords");
+    // this.gl.enableVertexAttribArray(this.attributeCoords);
+    // this.bufferCoords = this.gl.createBuffer();
+
+    // // Set up normals for sending to each vertex
+    // this.attributeNormals = this.gl.getAttribLocation(program, "a_normals");
+    // this.gl.enableVertexAttribArray(this.attributeNormals);
+    // this.normalBuffer = this.gl.createBuffer();
+
+    // configure canvas resolution and clear the canvas
     this.clearCanvas();
   }
 
@@ -44,8 +67,8 @@ export default class Scene {
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const viewProjectionMatrix = camera.getViewProjectionMatrix(aspect);
 
-    // Get lighting direction
-    const reverseLightDirection = light.getNormalizedDirection();
+    // Set lighting direction
+    this.tempProgram.applyReverseLight(light.getNormalizedDirection());
 
     shapes.forEach((shape) => {
       // compute transformation matrix
@@ -58,12 +81,9 @@ export default class Scene {
       mesh.material.color.red = shape.color.red * 255;
       mesh.material.color.green = shape.color.green * 255;
       mesh.material.color.blue = shape.color.blue * 255;
-
-      const program = this.getProgram(mesh);
-      program.applyReverseLight(reverseLightDirection);
-      program.applyProjection(viewProjectionMatrix, modelViewMatrix);
-      program.bind();
-      program.draw();
+      this.tempProgram.bind(mesh);
+      this.tempProgram.applyProjection(viewProjectionMatrix, modelViewMatrix);
+      this.tempProgram.draw(mesh);
     });
   }
 
@@ -84,20 +104,6 @@ export default class Scene {
     return M;
   }
 
-  private getProgram(mesh: Mesh): Program {
-    let program = this.programs.get(mesh);
-    if (!program) {
-      program = new Program(this.gl, {
-        vertices: mesh.geometry.vertices,
-        normals: mesh.geometry.normals,
-        color: mesh.material.color,
-      });
-      this.programs.set(mesh, program);
-    }
-    console.log(program);
-    return program;
-  }
-
   /**
    * ========================================
    * Scenes are singletons
@@ -115,7 +121,11 @@ export default class Scene {
     vertexShaderSource: string,
     fragmentShaderSource: string
   ) {
-    Scene.instance = new Scene(canvas);
+    Scene.instance = new Scene(
+      canvas,
+      vertexShaderSource,
+      fragmentShaderSource
+    );
     return Scene.instance;
   }
 }

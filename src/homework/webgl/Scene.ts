@@ -40,10 +40,7 @@ export default class Scene {
 
     shapes.forEach((shape) => {
       // compute transformation matrix
-      const modelViewMatrix = this.computeModelViewMatrix(
-        shape,
-        viewProjectionMatrix
-      );
+      const modelViewMatrix = this.computeModelViewMatrix(shape);
 
       const mesh = new Cube();
       mesh.material.color.red = shape.color.red * 255;
@@ -60,20 +57,22 @@ export default class Scene {
     });
   }
 
-  private computeModelViewMatrix(
-    shape: Canvas3D.Shape,
-    viewProjectionMatrix: number[]
-  ) {
+  private computeModelViewMatrix(shape: Canvas3D.Shape) {
     let M = m4.translate(
-      viewProjectionMatrix,
+      m4.identity(),
       shape.translation.x,
       shape.translation.y,
       shape.translation.z
     );
-    M = m4.xRotate(M, degreesToRadians(shape.rotation.x));
+    M = m4.multiply(M, this.computeRotationMatrix(shape));
+    M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
+    return M;
+  }
+
+  private computeRotationMatrix(shape: Canvas3D.Shape) {
+    let M = m4.xRotate(m4.identity(), degreesToRadians(shape.rotation.x));
     M = m4.yRotate(M, degreesToRadians(shape.rotation.y));
     M = m4.zRotate(M, degreesToRadians(shape.rotation.z));
-    M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
     return M;
   }
 

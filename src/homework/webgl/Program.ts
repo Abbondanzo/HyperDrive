@@ -31,7 +31,8 @@ export class Program {
   private readonly attributeNormals: number;
 
   private readonly uniformColor: WebGLUniformLocation;
-  private readonly uniformWorldViewProjection: WebGLUniformLocation;
+  private readonly uniformViewProjection: WebGLUniformLocation;
+  private readonly uniformModelView: WebGLUniformLocation;
   private readonly uniformWorldInverseTranspose: WebGLUniformLocation;
   private readonly uniformReverseLightDirectionLocation: WebGLUniformLocation;
 
@@ -61,9 +62,13 @@ export class Program {
 
     // Uniforms
     this.uniformColor = this.gl.getUniformLocation(this.program, "u_color");
-    this.uniformWorldViewProjection = this.gl.getUniformLocation(
+    this.uniformViewProjection = this.gl.getUniformLocation(
       this.program,
-      "u_worldViewProjection"
+      "u_projectionMatrix"
+    );
+    this.uniformModelView = this.gl.getUniformLocation(
+      this.program,
+      "u_modelViewMatrix"
     );
     this.uniformWorldInverseTranspose = this.gl.getUniformLocation(
       this.program,
@@ -118,7 +123,9 @@ export class Program {
     viewProjectionMatrix,
   }: ProgramUniforms) {
     this.applyColor(color);
-    this.applyProjection(viewProjectionMatrix, modelViewMatrix);
+    this.applyViewProjection(viewProjectionMatrix);
+    this.applyModelView(modelViewMatrix);
+    this.applyInverseTranspose();
     this.applyReverseLight(reverseLightDirection);
   }
 
@@ -132,25 +139,24 @@ export class Program {
     );
   }
 
-  private applyProjection(
-    viewProjectionMatrix: number[],
-    modelViewMatrix: number[]
-  ) {
-    const worldInverseTransposeMatrix = m4.transpose(m4.identity());
+  private applyViewProjection(viewProjectionMatrix: number[]) {
     this.gl.uniformMatrix4fv(
-      this.uniformWorldViewProjection,
+      this.uniformViewProjection,
       false,
       viewProjectionMatrix
     );
+  }
+
+  private applyModelView(modelViewMatrix: number[]) {
+    this.gl.uniformMatrix4fv(this.uniformModelView, false, modelViewMatrix);
+  }
+
+  private applyInverseTranspose() {
+    const worldInverseTransposeMatrix = m4.transpose(m4.identity());
     this.gl.uniformMatrix4fv(
       this.uniformWorldInverseTranspose,
       false,
       worldInverseTransposeMatrix
-    );
-    this.gl.uniformMatrix4fv(
-      this.uniformWorldViewProjection,
-      false,
-      modelViewMatrix
     );
   }
 

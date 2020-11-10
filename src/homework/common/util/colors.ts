@@ -16,7 +16,7 @@ const colorToHex = (color: number): string => {
   return hex.length === 1 ? `0${hex}` : hex;
 };
 
-export const rgbToHex = (color: Canvas2D.Color) => {
+export const rgbToHex = (color: Canvas3D.Color) => {
   console.assert(color.red <= 1, "Red is greater than 1");
   const rh = colorToHex(color.red);
   console.assert(color.green <= 1, "Green is greater than 1");

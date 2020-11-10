@@ -1,6 +1,7 @@
 import { mat4 } from "gl-matrix";
 import { Geometry } from "../objects/Geometry";
 import { Material } from "../objects/Material";
+import { Mesh } from "../objects/Mesh";
 
 import fragmentShaderSource from "../shaders/basic_fragment.glsl";
 import vertexShaderSource from "../shaders/basic_vertex.glsl";
@@ -25,6 +26,9 @@ export class BasicProgram {
 
   private readonly attributePosition: number;
   private readonly attributeNormals: number;
+
+  // Fragment shader stuffs
+  private readonly uniformColor: WebGLUniformLocation;
 
   private constructor(gl: WebGLRenderingContext, data: Float32Array) {
     this.gl = gl;
@@ -57,6 +61,7 @@ export class BasicProgram {
       "u_modelViewMatrix"
     );
     this.uniformNormalMatrix = gl.getUniformLocation(program, "u_normalMatrix");
+    this.uniformColor = this.gl.getUniformLocation(program, "u_color");
     this.attributePosition = gl.getAttribLocation(program, "a_position");
     this.attributeNormals = gl.getAttribLocation(program, "a_normals");
 
@@ -67,12 +72,8 @@ export class BasicProgram {
     gl.bufferData(gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
   }
 
-  static fromMesh(
-    gl: WebGLRenderingContext,
-    geometry: Geometry,
-    material: Material
-  ): BasicProgram {
-    return new BasicProgram(gl, geometry.vertices);
+  static fromMesh(gl: WebGLRenderingContext, mesh: Mesh): BasicProgram {
+    return new BasicProgram(gl, mesh.geometry.vertices);
   }
 
   bind() {

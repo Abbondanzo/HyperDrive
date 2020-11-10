@@ -1,40 +1,91 @@
-export const renderCube = (
-  gl: WebGLRenderingContext,
-  cube: Canvas3D.Cube,
-  bufferCoords: WebGLBuffer,
-  normalBuffer: WebGLBuffer | null
-) => {
-  const x1 = cube.position.x - cube.dimensions.width / 2;
-  const y1 = cube.position.y - cube.dimensions.height / 2;
-  const z1 = cube.position.z + cube.dimensions.depth / 2;
-  const x2 = cube.position.x + cube.dimensions.width / 2;
-  const y2 = cube.position.y + cube.dimensions.height / 2;
-  const z2 = cube.position.z - cube.dimensions.depth / 2;
+import { vec3 } from "gl-matrix";
+import { Mesh } from "../../../core/objects/Mesh";
+import { Geometry } from "../../../core/objects/Geometry";
+import { Material } from "../../../core/objects/Material";
+import { Color } from "../../../core/data/Color";
 
-  // Front face
-  const A = [x1, y2, z1]; // TL
-  const B = [x2, y2, z1]; // TR
-  const C = [x2, y1, z1]; // BR
-  const D = [x1, y1, z1]; // BL
+// export const renderCube = (
+//   gl: WebGLRenderingContext,
+//   cube: Canvas3D.Cube,
+//   bufferCoords: WebGLBuffer,
+//   normalBuffer: WebGLBuffer | null
+// ): Mesh => {
+//   // Front face
+//   const A = [-1, 1, 1]; // TL
+//   const B = [1, 1, 1]; // TR
+//   const C = [1, -1, 1]; // BR
+//   const D = [-1, -1, 1]; // BL
 
-  // Back face (looking thru front)
-  const E = [x1, y2, z2]; // TL
-  const F = [x2, y2, z2]; // TR
-  const G = [x2, y1, z2]; // BR
-  const H = [x1, y1, z2]; // BL
+//   // Back face (looking thru front)
+//   const E = [-1, 1, -1]; // TL
+//   const F = [1, 1, -1]; // TR
+//   const G = [1, -1, -1]; // BR
+//   const H = [-1, -1, -1]; // BL
 
-  const posz = [].concat(A, B, C, A, C, D); // front
-  const posx = [].concat(B, F, G, B, G, C); // right
-  const negz = [].concat(F, E, H, F, H, G); // back
-  const negx = [].concat(E, A, D, E, D, H); // left
-  const posy = [].concat(A, E, F, A, F, B); // top
-  const negy = [].concat(D, C, G, D, G, H); // bottom
+//   const posz = [].concat(A, B, C, A, C, D); // front
+//   const posx = [].concat(B, F, G, B, G, C); // right
+//   const negz = [].concat(F, E, H, F, H, G); // back
+//   const negx = [].concat(E, A, D, E, D, H); // left
+//   const posy = [].concat(A, E, F, A, F, B); // top
+//   const negy = [].concat(D, C, G, D, G, H); // bottom
 
-  const points = [].concat(posz, posx, negz, negx, posy, negy);
-  gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+//   const points = [].concat(posz, posx, negz, negx, posy, negy);
 
-  if (normalBuffer) {
+//   // gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
+//   // gl.bufferData(
+//   //   gl.ARRAY_BUFFER,
+//   //   new Float32Array([].concat(...points)),
+//   //   gl.STATIC_DRAW
+//   // );
+
+//   // if (normalBuffer) {
+//   //   const front = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
+//   //   const right = [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0];
+//   //   const back = [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1];
+//   //   const left = [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0];
+//   //   const top = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0];
+//   //   const bottom = [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0];
+//   //   const normals = [].concat(front, right, back, left, top, bottom);
+//   //   gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+//   //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+//   // }
+
+//   // gl.drawArrays(gl.TRIANGLES, 0, 36);
+//   const geometry = new Geometry(points);
+//   return new Mesh(points);
+// };
+
+export class Cube extends Mesh {
+  private static getGeometry() {
+    // Front face
+    const A = [-1, 1, 1]; // TL
+    const B = [1, 1, 1]; // TR
+    const C = [1, -1, 1]; // BR
+    const D = [-1, -1, 1]; // BL
+
+    // Back face (looking thru front)
+    const E = [-1, 1, -1]; // TL
+    const F = [1, 1, -1]; // TR
+    const G = [1, -1, -1]; // BR
+    const H = [-1, -1, -1]; // BL
+
+    const posz = [].concat(A, B, C, A, C, D); // front
+    const posx = [].concat(B, F, G, B, G, C); // right
+    const negz = [].concat(F, E, H, F, H, G); // back
+    const negx = [].concat(E, A, D, E, D, H); // left
+    const posy = [].concat(A, E, F, A, F, B); // top
+    const negy = [].concat(D, C, G, D, G, H); // bottom
+
+    const points = [].concat(posz, posx, negz, negx, posy, negy);
+
+    // gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
+    // gl.bufferData(
+    //   gl.ARRAY_BUFFER,
+    //   new Float32Array([].concat(...points)),
+    //   gl.STATIC_DRAW
+    // );
+
+    // if (normalBuffer) {
     const front = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
     const right = [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0];
     const back = [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1];
@@ -42,9 +93,16 @@ export const renderCube = (
     const top = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0];
     const bottom = [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0];
     const normals = [].concat(front, right, back, left, top, bottom);
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
+    //   gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    //   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    // }
+
+    // gl.drawArrays(gl.TRIANGLES, 0, 36);
+    return new Geometry(points, normals);
   }
 
-  gl.drawArrays(gl.TRIANGLES, 0, 36);
-};
+  constructor() {
+    super(Cube.getGeometry(), new Material({ color: new Color(255, 0, 0) }));
+  }
+}

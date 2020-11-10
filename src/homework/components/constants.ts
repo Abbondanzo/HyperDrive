@@ -14,7 +14,7 @@ const BLUE_CUBE = buildShape("CUBE", {
   dimensions: SIZE_ONE,
   color: BLUE_RGB,
   translation: { x: 0, y: 0, z: 0 },
-  scale: { x: 15, y: 15, z: 15 },
+  scale: { x: 8, y: 8, z: 8 },
   rotation: { x: 0, y: 0, z: 0 },
 });
 
@@ -23,7 +23,7 @@ const GREEN_CUBE = buildShape("CUBE", {
   dimensions: SIZE_ONE,
   color: GREEN_RGB,
   translation: { x: 20, y: 0, z: 0 },
-  scale: { x: 15, y: 15, z: 15 },
+  scale: { x: 8, y: 8, z: 8 },
   rotation: { x: 0, y: 0, z: 0 },
 });
 
@@ -32,7 +32,7 @@ const RED_CUBE = buildShape("CUBE", {
   dimensions: SIZE_ONE,
   color: RED_RGB,
   translation: { x: -20, y: 0, z: 0 },
-  scale: { x: 15, y: 15, z: 15 },
+  scale: { x: 8, y: 8, z: 8 },
   rotation: { x: 0, y: 0, z: 0 },
 });
 

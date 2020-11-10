@@ -1,9 +1,9 @@
-import { vec3 } from "gl-matrix";
-
 export class Geometry {
   readonly vertices: Float32Array;
+  readonly normals: Float32Array;
 
-  constructor(points: vec3[]) {
-    this.vertices = new Float32Array([].concat(...points));
+  constructor(points: number[], normals?: number[]) {
+    this.vertices = new Float32Array(points);
+    this.normals = new Float32Array(normals || []);
   }
 }

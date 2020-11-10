@@ -1,4 +1,5 @@
-import { renderCube } from "./cube";
+import { Mesh } from "../../../core/objects/Mesh";
+import { Cube } from "./cube";
 
 // TODO: These options should be placed in a singleton vault
 interface RenderOptions {
@@ -8,16 +9,10 @@ interface RenderOptions {
   normalBuffer: WebGLBuffer | null;
 }
 
-export const renderShape = ({
-  shape,
-  context,
-  bufferCoords,
-  normalBuffer,
-}: RenderOptions) => {
+export const renderShape = ({ shape }: RenderOptions): Mesh => {
   switch (shape.type) {
     case "CUBE":
-      renderCube(context, shape as Canvas3D.Cube, bufferCoords, normalBuffer);
-      break;
+      return new Cube();
     default:
       console.error("Rendering unhandled shape type", shape);
   }

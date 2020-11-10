@@ -1,9 +1,11 @@
 import { renderShape } from "../common/render";
+import { Cube } from "../common/render/cube";
 import { createProgramFromScripts } from "../common/setup/createProgramFromScripts";
 import { degreesToRadians } from "../common/util/degrees";
 import m4 from "../common/util/m4";
 import Camera from "./Camera";
 import Light from "./Light";
+import { Program } from "./Program";
 
 const DIMENSIONS = 3;
 
@@ -17,6 +19,8 @@ export default class Scene {
   private readonly uniformWorldViewProjection: WebGLUniformLocation;
   private readonly uniformWorldInverseTranspose: WebGLUniformLocation;
   private readonly uniformReverseLightDirectionLocation: WebGLUniformLocation;
+
+  private readonly tempProgram: Program;
 
   private constructor(
     canvas: HTMLCanvasElement,
@@ -32,6 +36,7 @@ export default class Scene {
       fragmentShaderSource
     );
     this.gl.useProgram(program);
+    this.tempProgram = new Program(this.gl, program);
 
     // Set up coordinate attributes for sending to each vertex
     this.attributeCoords = this.gl.getAttribLocation(program, "a_coords");
@@ -77,7 +82,8 @@ export default class Scene {
   }
 
   render(shapes: Canvas3D.Shape[], camera: Camera, light: Light) {
-    this.renderSetup();
+    // this.renderSetup();
+    this.gl.enable(this.gl.DEPTH_TEST);
 
     if (shapes.length === 0) {
       this.clearCanvas();
@@ -111,38 +117,13 @@ export default class Scene {
       const M = this.computeModelViewMatrix(shape, worldViewProjectionMatrix);
       this.gl.uniformMatrix4fv(this.uniformWorldViewProjection, false, M);
 
-      renderShape({
-        context: this.gl,
-        shape,
-        bufferCoords: this.bufferCoords,
-        normalBuffer: this.normalBuffer,
-      });
+      const mesh = new Cube();
+      mesh.material.color.red = shape.color.red * 255;
+      mesh.material.color.green = shape.color.green * 255;
+      mesh.material.color.blue = shape.color.blue * 255;
+      this.tempProgram.bind(mesh);
+      this.tempProgram.draw(mesh);
     });
-  }
-
-  private renderSetup() {
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferCoords);
-    this.gl.vertexAttribPointer(
-      this.attributeCoords,
-      DIMENSIONS,
-      this.gl.FLOAT,
-      false,
-      0,
-      0
-    );
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
-    this.gl.vertexAttribPointer(
-      this.attributeNormals,
-      3,
-      this.gl.FLOAT,
-      false,
-      0,
-      0
-    );
-
-    // this.gl.enable(this.gl.CULL_FACE);
-    this.gl.enable(this.gl.DEPTH_TEST);
   }
 
   private computeWorldViewProjectionMatrix(viewProjectionMatrix: number[]) {

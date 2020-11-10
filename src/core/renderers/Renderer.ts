@@ -69,11 +69,7 @@ export class Renderer {
     if (program) {
       return program;
     } else {
-      program = BasicProgram.fromMesh(
-        this.gl,
-        object.geometry,
-        object.material
-      );
+      program = BasicProgram.fromMesh(this.gl, object);
       this.programs.set(object, program);
       return program;
     }

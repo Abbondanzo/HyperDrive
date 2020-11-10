@@ -1,5 +1,4 @@
 import { Color } from "../../core/data/Color";
-import { Mesh } from "../../core/objects/Mesh";
 import { createProgramFromScripts } from "../common/setup/createProgramFromScripts";
 import m4 from "../common/util/m4";
 import fragmentShaderSource from "../shaders/basic_fragment.glsl";
@@ -7,25 +6,60 @@ import vertexShaderSource from "../shaders/basic_vertex.glsl";
 
 const DIMENSIONS = 3;
 
+interface ObjectProperties {
+  vertices: Float32Array;
+  normals: Float32Array;
+}
+
+interface ProgramUniforms {
+  color: Color;
+  modelViewMatrix: number[];
+  reverseLightDirection: number[];
+  viewProjectionMatrix: number[];
+}
+
 export class Program {
   private readonly gl: WebGLRenderingContext;
   private readonly program: WebGLProgram;
 
-  private attributePosition: number;
-  private positionBuffer: WebGLBuffer;
+  private readonly vertexCount: number;
 
-  private attributeNormals: number;
-  private normalBuffer: WebGLBuffer;
+  private readonly positionBuffer: WebGLBuffer;
+  private readonly normalBuffer: WebGLBuffer;
+
+  private readonly attributePosition: number;
+  private readonly attributeNormals: number;
 
   private readonly uniformColor: WebGLUniformLocation;
   private readonly uniformWorldViewProjection: WebGLUniformLocation;
   private readonly uniformWorldInverseTranspose: WebGLUniformLocation;
   private readonly uniformReverseLightDirectionLocation: WebGLUniformLocation;
 
-  constructor(gl: WebGLRenderingContext) {
+  constructor(
+    gl: WebGLRenderingContext,
+    { vertices, normals }: ObjectProperties
+  ) {
     this.gl = gl;
     this.program = Program.getProgram(gl);
 
+    // Buffers
+    this.positionBuffer = this.gl.createBuffer();
+    this.setPositionData(vertices);
+    this.vertexCount = vertices.length / DIMENSIONS;
+    this.normalBuffer = this.gl.createBuffer();
+    this.setNormalData(normals);
+
+    // Attributes
+    this.attributePosition = this.gl.getAttribLocation(
+      this.program,
+      "a_coords"
+    );
+    this.attributeNormals = this.gl.getAttribLocation(
+      this.program,
+      "a_normals"
+    );
+
+    // Uniforms
     this.uniformColor = this.gl.getUniformLocation(this.program, "u_color");
     this.uniformWorldViewProjection = this.gl.getUniformLocation(
       this.program,
@@ -41,28 +75,67 @@ export class Program {
     );
   }
 
-  bind(mesh: Mesh) {
-    // Actual func
+  private setPositionData(vertices: Float32Array) {
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
+  }
 
+  private setNormalData(normals: Float32Array) {
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, normals, this.gl.STATIC_DRAW);
+  }
+
+  bind(uniforms: ProgramUniforms) {
     if (this.gl.getParameter(this.gl.CURRENT_PROGRAM) !== this.program) {
       this.gl.useProgram(this.program);
     }
 
-    this.bufferData("a_coords", mesh.geometry.vertices);
-    this.bufferData("a_normals", mesh.geometry.normals);
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
+    this.enableAttribute(this.attributePosition);
+
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+    this.enableAttribute(this.attributeNormals);
+
+    this.applyUniforms(uniforms);
   }
 
-  draw(mesh: Mesh) {
-    // TODO: This length is set in constructor
-    this.setColor(mesh.material.color);
-    this.gl.drawArrays(
-      this.gl.TRIANGLES,
-      0,
-      mesh.geometry.vertices.length / DIMENSIONS
+  private enableAttribute(attributeLocation: number) {
+    this.gl.enableVertexAttribArray(attributeLocation);
+    this.gl.vertexAttribPointer(
+      attributeLocation,
+      DIMENSIONS, // dimensions
+      this.gl.FLOAT, // type
+      false, // normalized
+      0, // stride
+      0 // offset
     );
   }
 
-  applyProjection(viewProjectionMatrix: number[], modelViewMatrix: number[]) {
+  private applyUniforms({
+    color,
+    modelViewMatrix,
+    reverseLightDirection,
+    viewProjectionMatrix,
+  }: ProgramUniforms) {
+    this.applyColor(color);
+    this.applyProjection(viewProjectionMatrix, modelViewMatrix);
+    this.applyReverseLight(reverseLightDirection);
+  }
+
+  private applyColor(color: Color) {
+    this.gl.uniform4f(
+      this.uniformColor,
+      color.red / 255,
+      color.green / 255,
+      color.blue / 255,
+      1
+    );
+  }
+
+  private applyProjection(
+    viewProjectionMatrix: number[],
+    modelViewMatrix: number[]
+  ) {
     const worldInverseTransposeMatrix = m4.transpose(m4.identity());
     this.gl.uniformMatrix4fv(
       this.uniformWorldViewProjection,
@@ -81,37 +154,12 @@ export class Program {
     );
   }
 
-  applyReverseLight(direction: number[]) {
+  private applyReverseLight(direction: number[]) {
     this.gl.uniform3fv(this.uniformReverseLightDirectionLocation, direction);
   }
 
-  private bufferData(attribName: string, data: Float32Array) {
-    const buffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
-    const attributeLocation = this.gl.getAttribLocation(
-      this.program,
-      attribName
-    );
-    this.gl.enableVertexAttribArray(attributeLocation);
-    this.gl.vertexAttribPointer(
-      attributeLocation,
-      DIMENSIONS, // dimensions
-      this.gl.FLOAT, // type
-      false, // normalized
-      0, // stride
-      0 // offset
-    );
-  }
-
-  private setColor(color: Color) {
-    this.gl.uniform4f(
-      this.uniformColor,
-      color.red / 255,
-      color.green / 255,
-      color.blue / 255,
-      1
-    );
+  draw() {
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertexCount);
   }
 
   private static getProgram(gl: WebGLRenderingContext): WebGLProgram {

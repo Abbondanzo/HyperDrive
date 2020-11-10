@@ -1,39 +1,18 @@
 import { Mesh } from "../../core/objects/Mesh";
-import { renderShape } from "../common/render";
 import { Cube } from "../common/render/cube";
-import { createProgramFromScripts } from "../common/setup/createProgramFromScripts";
 import { degreesToRadians } from "../common/util/degrees";
 import m4 from "../common/util/m4";
 import Camera from "./Camera";
 import Light from "./Light";
 import { Program } from "./Program";
 
-const DIMENSIONS = 3;
-
 export default class Scene {
   private readonly gl: WebGLRenderingContext;
-  private readonly attributeCoords: number;
-  private readonly attributeNormals: number;
-  private readonly bufferCoords: WebGLBuffer;
-  private readonly normalBuffer: WebGLBuffer;
-
   private readonly programs: WeakMap<Mesh, Program>;
 
   private constructor(canvas: HTMLCanvasElement) {
     this.gl = canvas.getContext("webgl");
     this.programs = new WeakMap();
-
-    // // Set up coordinate attributes for sending to each vertex
-    // this.attributeCoords = this.gl.getAttribLocation(program, "a_coords");
-    // this.gl.enableVertexAttribArray(this.attributeCoords);
-    // this.bufferCoords = this.gl.createBuffer();
-
-    // // Set up normals for sending to each vertex
-    // this.attributeNormals = this.gl.getAttribLocation(program, "a_normals");
-    // this.gl.enableVertexAttribArray(this.attributeNormals);
-    // this.normalBuffer = this.gl.createBuffer();
-
-    // configure canvas resolution and clear the canvas
     this.clearCanvas();
   }
 
@@ -57,7 +36,7 @@ export default class Scene {
     const viewProjectionMatrix = camera.getViewProjectionMatrix(aspect);
 
     // Get lighting direction
-    const lightingDirection = light.getNormalizedDirection();
+    const reverseLightDirection = light.getNormalizedDirection();
 
     shapes.forEach((shape) => {
       // compute transformation matrix
@@ -71,10 +50,13 @@ export default class Scene {
       mesh.material.color.green = shape.color.green * 255;
       mesh.material.color.blue = shape.color.blue * 255;
       const program = this.getProgram(mesh);
-      program.bind(mesh);
-      program.applyReverseLight(lightingDirection);
-      program.applyProjection(viewProjectionMatrix, modelViewMatrix);
-      program.draw(mesh);
+      program.bind({
+        color: mesh.material.color,
+        modelViewMatrix,
+        reverseLightDirection,
+        viewProjectionMatrix,
+      });
+      program.draw();
     });
   }
 
@@ -98,7 +80,10 @@ export default class Scene {
   private getProgram(mesh: Mesh): Program {
     let program = this.programs.get(mesh);
     if (!program) {
-      program = new Program(this.gl);
+      program = new Program(this.gl, {
+        vertices: mesh.geometry.vertices,
+        normals: mesh.geometry.normals,
+      });
       this.programs.set(mesh, program);
     }
     return program;
@@ -116,11 +101,7 @@ export default class Scene {
     }
     return Scene.instance;
   }
-  static init(
-    canvas: HTMLCanvasElement,
-    vertexShaderSource: string,
-    fragmentShaderSource: string
-  ) {
+  static init(canvas: HTMLCanvasElement) {
     Scene.instance = new Scene(canvas);
     return Scene.instance;
   }

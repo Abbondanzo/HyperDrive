@@ -1,3 +1,4 @@
+import { Mesh } from "../../core/objects/Mesh";
 import { renderShape } from "../common/render";
 import { Cube } from "../common/render/cube";
 import { createProgramFromScripts } from "../common/setup/createProgramFromScripts";
@@ -16,23 +17,11 @@ export default class Scene {
   private readonly bufferCoords: WebGLBuffer;
   private readonly normalBuffer: WebGLBuffer;
 
-  private readonly tempProgram: Program;
+  private readonly programs: WeakMap<Mesh, Program>;
 
-  private constructor(
-    canvas: HTMLCanvasElement,
-    vertexShaderSource: string,
-    fragmentShaderSource: string
-  ) {
+  private constructor(canvas: HTMLCanvasElement) {
     this.gl = canvas.getContext("webgl");
-
-    // create and use a GLSL program
-    const program = createProgramFromScripts(
-      this.gl,
-      vertexShaderSource,
-      fragmentShaderSource
-    );
-    this.gl.useProgram(program);
-    this.tempProgram = new Program(this.gl);
+    this.programs = new WeakMap();
 
     // // Set up coordinate attributes for sending to each vertex
     // this.attributeCoords = this.gl.getAttribLocation(program, "a_coords");
@@ -67,8 +56,8 @@ export default class Scene {
     const aspect = canvas.clientWidth / canvas.clientHeight;
     const viewProjectionMatrix = camera.getViewProjectionMatrix(aspect);
 
-    // Set lighting direction
-    this.tempProgram.applyReverseLight(light.getNormalizedDirection());
+    // Get lighting direction
+    const lightingDirection = light.getNormalizedDirection();
 
     shapes.forEach((shape) => {
       // compute transformation matrix
@@ -81,9 +70,11 @@ export default class Scene {
       mesh.material.color.red = shape.color.red * 255;
       mesh.material.color.green = shape.color.green * 255;
       mesh.material.color.blue = shape.color.blue * 255;
-      this.tempProgram.bind(mesh);
-      this.tempProgram.applyProjection(viewProjectionMatrix, modelViewMatrix);
-      this.tempProgram.draw(mesh);
+      const program = this.getProgram(mesh);
+      program.bind(mesh);
+      program.applyReverseLight(lightingDirection);
+      program.applyProjection(viewProjectionMatrix, modelViewMatrix);
+      program.draw(mesh);
     });
   }
 
@@ -104,6 +95,15 @@ export default class Scene {
     return M;
   }
 
+  private getProgram(mesh: Mesh): Program {
+    let program = this.programs.get(mesh);
+    if (!program) {
+      program = new Program(this.gl);
+      this.programs.set(mesh, program);
+    }
+    return program;
+  }
+
   /**
    * ========================================
    * Scenes are singletons
@@ -121,11 +121,7 @@ export default class Scene {
     vertexShaderSource: string,
     fragmentShaderSource: string
   ) {
-    Scene.instance = new Scene(
-      canvas,
-      vertexShaderSource,
-      fragmentShaderSource
-    );
+    Scene.instance = new Scene(canvas);
     return Scene.instance;
   }
 }

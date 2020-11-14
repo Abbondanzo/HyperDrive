@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
   CameraManager.camera.position.z = 5;
 
   addFrameListener(({ delta }: FrameEvent) => {
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+    cube.rotation.x += 0.005;
+    cube.rotation.y += 0.005;
   });
 
   TimeManager.play();

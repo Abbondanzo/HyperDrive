@@ -30,7 +30,9 @@ jobs:
 
       - name: Stage build artifacts
         run: |
-          git add -f ./dist
+          mkdir docs
+          mv dist/* docs
+          git add .
           git status
 
       - name: Make commit message

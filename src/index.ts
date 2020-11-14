@@ -4,12 +4,16 @@ import {
   Mesh,
   MeshPhongMaterial,
   PointLight,
+  Vector3,
 } from "three";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls";
 
 import { addFrameListener, FrameEvent } from "./events/frame";
+import { loadCubeMap } from "./loaders/background/cubemap";
 import CameraManager from "./manager/CameraManager";
 import SceneManager from "./manager/SceneManager";
 import TimeManager from "./manager/TimeManager";
+import { BetterPointerLockControls } from "./scene/BetterPointerLockControls";
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById(
@@ -35,6 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cube.rotation.x += 0.005;
     cube.rotation.y += 0.005;
   });
+
+  SceneManager.scene.background = loadCubeMap();
 
   TimeManager.play();
 });

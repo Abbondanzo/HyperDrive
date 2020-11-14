@@ -28,6 +28,7 @@ class SceneManager {
   attach(element: HTMLElement) {
     element.appendChild(this.renderer.domElement);
     EventManager.addListeners();
+    CameraManager.initializeControls(element);
     // Dispatch a global event to check the height since we've now attached our canvas
     dispatchWindowResizeEvent({
       width: window.innerWidth,

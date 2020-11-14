@@ -1,12 +1,17 @@
 import { Scene, WebGLRenderer } from "three";
 
-import { dispatchCanvasResizeEvent } from "../events/canvasResize";
 import {
   addFrameListener,
   FrameEvent,
   removeFrameListener,
 } from "../events/frame";
+import {
+  addWindowResizeListener,
+  dispatchWindowResizeEvent,
+  WindowResizeEvent,
+} from "../events/windowResize";
 import CameraManager from "./CameraManager";
+import EventManager from "./EventManager";
 
 class SceneManager {
   readonly scene: Scene;
@@ -16,22 +21,22 @@ class SceneManager {
     this.scene = new Scene();
     this.scene.add(CameraManager.camera);
     this.renderer = new WebGLRenderer();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
     addFrameListener(this.update);
+    addWindowResizeListener(this.handleResize);
   }
 
   attach(element: HTMLElement) {
     element.appendChild(this.renderer.domElement);
-    this.handleResize();
-    window.addEventListener("resize", this.handleResize);
-  }
-
-  private readonly handleResize = () => {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    dispatchCanvasResizeEvent({
+    EventManager.addListeners();
+    // Dispatch a global event to check the height since we've now attached our canvas
+    dispatchWindowResizeEvent({
       width: window.innerWidth,
       height: window.innerHeight,
     });
+  }
+
+  private readonly handleResize = ({ width, height }: WindowResizeEvent) => {
+    this.renderer.setSize(width, height);
   };
 
   private update = ({}: FrameEvent) => {

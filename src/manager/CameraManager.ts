@@ -1,15 +1,11 @@
 import { PerspectiveCamera } from "three";
 
+import { addMouseMoveListener, MouseMoveEvent } from "../events/mouseMove";
 import {
-  addCanvasResizeListener,
-  CanvasResizeEvent,
-} from "../events/canvasResize";
+  addWindowResizeListener,
+  WindowResizeEvent,
+} from "../events/windowResize";
 
-/**
- * Houses all logic regarding the main camera.
- *
- * Event subscriptions for mouse movement and canvas resizing will happen here.
- */
 class CameraManager {
   private static DEFAULT_FOV = 50;
 
@@ -17,12 +13,17 @@ class CameraManager {
 
   constructor() {
     this.camera = new PerspectiveCamera(CameraManager.DEFAULT_FOV);
-    addCanvasResizeListener(this.updateSize);
+    addWindowResizeListener(this.updateSize);
+    addMouseMoveListener(this.updatePosition);
   }
 
-  private readonly updateSize = ({ width, height }: CanvasResizeEvent) => {
+  private readonly updateSize = ({ width, height }: WindowResizeEvent) => {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+  };
+
+  private readonly updatePosition = ({ x, y }: MouseMoveEvent) => {
+    console.log(x, y);
   };
 }
 

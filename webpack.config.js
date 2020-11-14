@@ -26,10 +26,12 @@ const hashCode = (value) => {
   return crypto.createHash("md5").update(value).digest("hex").slice(0, 12);
 };
 
-console.log("Your CPU fan sounds kinda quiet. Lemme fix that...\n\n");
+const mode = isDevelopment ? "development" : "production";
+console.log(`Running webpack in ${mode} mode`);
+console.log("Your CPU fan sounds kinda quiet. Lemme fix that...\n");
 
 module.exports = {
-  mode: process.env.NODE_ENV || "development",
+  mode,
   devtool: "source-map",
 
   stats,
@@ -85,11 +87,12 @@ module.exports = {
   },
 
   plugins: [
-    new CopyWebpackPlugin({
-      patterns: [{ from: "public" }],
-    }),
+    !isDevelopment &&
+      new CopyWebpackPlugin({
+        patterns: [{ from: "public" }],
+      }),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-  ],
+  ].filter(Boolean),
 };

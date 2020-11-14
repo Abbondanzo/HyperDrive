@@ -4,8 +4,8 @@
   "description": "Nostalgia factory",
   "main": "./src/index.ts",
   "scripts": {
-    "build": "webpack --mode=production --progress",
-    "start": "webpack-dev-server --progress --mode=development"
+    "build": "NODE_ENV=production webpack --mode=production --progress",
+    "start": "NODE_ENV=development webpack-dev-server --progress"
   },
   "repository": {
     "type": "git",

@@ -1,8 +1,11 @@
 import {
   AmbientLight,
   BoxGeometry,
+  Fog,
   Mesh,
+  MeshLambertMaterial,
   MeshPhongMaterial,
+  PlaneGeometry,
   PointLight,
 } from "three";
 
@@ -36,6 +39,16 @@ document.addEventListener("DOMContentLoaded", () => {
     cube.rotation.x += 0.005;
     cube.rotation.y += 0.005;
   });
+  SceneManager.scene.fog = new Fog(0xffffff);
+
+  // const plane = new Mesh(
+  //   new PlaneGeometry(4000, 4000),
+  //   new MeshLambertMaterial({ color: 0x0000ff })
+  // );
+  // plane.rotation.x -= Math.PI / 2;
+  // plane.position.y -= 5;
+
+  // SceneManager.scene.add(plane);
 
   SceneManager.scene.background = loadCubeMap();
 

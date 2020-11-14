@@ -13,6 +13,8 @@ export class BetterPointerLockControls extends EventDispatcher {
   maxPolarAngle: number;
   maxLeftAngle: number | null;
   maxRightAngle: number | null;
+  verticalSensitivity: number;
+  horizontalSensitivity: number;
 
   private camera: Camera;
   private euler: Euler;
@@ -27,6 +29,8 @@ export class BetterPointerLockControls extends EventDispatcher {
     this.maxPolarAngle = Math.PI; // 180 degrees
     this.maxLeftAngle = Math.PI / 2; // 90 degrees
     this.maxRightAngle = -Math.PI / 2; // -90 degrees
+    this.verticalSensitivity = 0.0015;
+    this.horizontalSensitivity = 0.002;
 
     this.camera = camera;
     this.euler = new Euler(0, 0, 0, "YXZ");
@@ -47,8 +51,8 @@ export class BetterPointerLockControls extends EventDispatcher {
 
     euler.setFromQuaternion(this.camera.quaternion);
 
-    euler.y -= movementX * 0.002;
-    euler.x -= movementY * 0.002;
+    euler.y -= movementX * this.horizontalSensitivity;
+    euler.x -= movementY * this.verticalSensitivity;
 
     // up/down
     euler.x = Math.min(

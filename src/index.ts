@@ -1,6 +1,12 @@
-import { BoxGeometry, Mesh, MeshBasicMaterial } from "three";
-import { addFrameListener, FrameEvent } from "./events/frame";
+import {
+  AmbientLight,
+  BoxGeometry,
+  Mesh,
+  MeshPhongMaterial,
+  PointLight,
+} from "three";
 
+import { addFrameListener, FrameEvent } from "./events/frame";
 import CameraManager from "./manager/CameraManager";
 import SceneManager from "./manager/SceneManager";
 import TimeManager from "./manager/TimeManager";
@@ -12,9 +18,16 @@ document.addEventListener("DOMContentLoaded", () => {
   SceneManager.attach(container);
 
   const geometry = new BoxGeometry();
-  const material = new MeshBasicMaterial({ color: 0x00ff00 });
+  const material = new MeshPhongMaterial({ color: 0x00ff00 });
   const cube = new Mesh(geometry, material);
   SceneManager.scene.add(cube);
+
+  const ambientLight = new AmbientLight(0xffffff, 0.2);
+  SceneManager.scene.add(ambientLight);
+
+  const pointLight = new PointLight(0xffffff);
+  pointLight.position.set(1, 2, 3);
+  SceneManager.scene.add(pointLight);
 
   CameraManager.camera.position.z = 5;
 

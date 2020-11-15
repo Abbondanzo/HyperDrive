@@ -1,4 +1,4 @@
-interface Song {
+export interface Song {
   bpm: number;
   durationS: number; // in seconds
   name: string;

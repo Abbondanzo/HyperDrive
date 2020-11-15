@@ -1,6 +1,7 @@
 import { LoadingManager, Scene } from "three";
 
 import CameraManager from "../manager/CameraManager";
+import { Songs } from "./audio/Songs";
 import { SkyBox } from "./background/SkyBox";
 import { Car } from "./car/Car";
 import { Cube } from "./cube/Cube";
@@ -13,8 +14,9 @@ export const buildScene = async (
   loadingManager: LoadingManager
 ) => {
   const sceneSubjects: SceneSubject[] = [
-    new Car(CameraManager.camera),
+    new Songs(CameraManager.camera),
     new SkyBox(),
+    new Car(CameraManager.camera),
     new Cube(),
     new EnvironmentLighting(),
     new Pavement(),

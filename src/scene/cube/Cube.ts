@@ -12,7 +12,11 @@ export class Cube implements SceneSubject {
 
   async load() {
     const geometry = new BoxGeometry();
-    const material = new MeshPhongMaterial({ color: 0x00ff00 });
+    const material = new MeshPhongMaterial({
+      color: 0x00ff00,
+      opacity: 0.5,
+      transparent: true,
+    });
     this.cube = new Mesh(geometry, material);
   }
 

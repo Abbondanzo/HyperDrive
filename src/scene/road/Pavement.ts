@@ -48,7 +48,7 @@ export class Pavement implements SceneSubject {
     const geometry = new PlaneGeometry(this.width, this.height, 32);
     this.plane = new Mesh(geometry, material);
     // Offset from car
-    this.plane.position.x = -1.5;
+    this.plane.position.x = 0.275 * 2; // 2x the Car x offset
     this.plane.position.y = -1.5;
     // Rotate so lengthwise
     this.plane.rotation.x = -Pavement.NINTETY_DEGREES;

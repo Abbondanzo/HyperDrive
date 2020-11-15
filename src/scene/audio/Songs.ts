@@ -26,6 +26,10 @@ export class Songs implements SceneSubject {
         const audio = new Audio(this.listener);
         audio.setBuffer(buffer);
         audio.setLoop(false);
+        // Assign duration based on buffer length
+        if (audio.duration) {
+          song.durationS = audio.duration;
+        }
         return { ...song, audio };
       });
     });

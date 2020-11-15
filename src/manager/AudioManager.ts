@@ -16,6 +16,7 @@ interface SongAudio extends Song {
 class AudioManager {
   private static PLAY_ON_START = false;
   private static CHANGE_INTERVAL = 50;
+  private static PER_SONG_DELAY = 500;
 
   private songs: SongAudio[];
   private currentSong: number | null;
@@ -86,7 +87,7 @@ class AudioManager {
     this.currentTimeout = window.setTimeout(() => {
       this.currentTimeout = null;
       this.playNextRandomSong();
-    }, randomSong.durationS * 1000 + 500);
+    }, randomSong.durationS * 1000 + AudioManager.PER_SONG_DELAY);
   };
 
   private getNextSongIndex(): number {

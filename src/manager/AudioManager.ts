@@ -14,7 +14,7 @@ interface SongAudio extends Song {
 }
 
 class AudioManager {
-  private static PLAY_ON_START = false;
+  private static PLAY_ON_START = true;
   private static CHANGE_INTERVAL = 50;
   private static PER_SONG_DELAY = 500;
 

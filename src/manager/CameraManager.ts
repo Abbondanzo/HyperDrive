@@ -4,7 +4,7 @@ import {
   addWindowResizeListener,
   WindowResizeEvent,
 } from "../events/windowResize";
-import { BetterPointerLockControls } from "../scene/BetterPointerLockControls";
+import { BetterPointerLockControls } from "../scene/controls/BetterPointerLockControls";
 
 class CameraManager {
   private static DEFAULT_FOV = 50;

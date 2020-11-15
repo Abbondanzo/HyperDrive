@@ -1,5 +1,6 @@
 import { Camera, Group, LoadingManager, Scene } from "three";
 
+import { addToWindow } from "../../utils/addToWindow";
 import { loadObject } from "../../utils/loadObject";
 import { SceneSubject } from "../SceneSubject";
 
@@ -15,6 +16,11 @@ export class Car implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     this.chassis = await loadObject(loadingManager, "models/chassis.obj");
+    // Fine tuning the chassis around origin
+    this.chassis.position.x = 0.275;
+    this.chassis.position.y = -0.7;
+    this.chassis.position.z = -0.1;
+    addToWindow("chassis", this.chassis);
   }
 
   attach(scene: Scene) {

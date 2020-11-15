@@ -7,7 +7,7 @@ import {
 import { BetterPointerLockControls } from "../scene/controls/BetterPointerLockControls";
 
 class CameraManager {
-  private static DEFAULT_FOV = 50;
+  private static DEFAULT_FOV = 60;
 
   readonly camera: PerspectiveCamera;
 

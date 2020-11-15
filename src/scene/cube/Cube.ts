@@ -17,6 +17,7 @@ export class Cube implements SceneSubject {
   }
 
   attach(scene: Scene) {
+    this.cube.position.z -= 5;
     scene.add(this.cube);
   }
 

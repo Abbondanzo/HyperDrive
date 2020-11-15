@@ -5,7 +5,8 @@
   "main": "./src/index.ts",
   "scripts": {
     "build": "NODE_ENV=production webpack --mode=production --progress",
-    "start": "NODE_ENV=development webpack-dev-server --progress"
+    "start": "NODE_ENV=development webpack-dev-server --progress",
+    "download-songs": "ts-node --skip-project --compiler-options '{\"esModuleInterop\":true}' ./src/audio/downloader.ts"
   },
   "repository": {
     "type": "git",
@@ -20,17 +21,21 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.12.3",
+    "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-typescript": "^7.12.1",
+    "@types/youtube-dl": "^3.0.0",
     "babel-loader": "^8.1.0",
     "copy-webpack-plugin": "^6.3.1",
     "html-webpack-plugin": "^4.5.0",
     "raw-loader": "^4.0.2",
     "ts-loader": "^8.0.7",
+    "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
     "webpack": "^5.3.2",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "youtube-dl": "^3.0.2"
   },
   "engines": {
     "node": "12.x"

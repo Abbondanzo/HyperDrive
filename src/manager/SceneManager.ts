@@ -20,7 +20,7 @@ class SceneManager {
   constructor() {
     this.scene = new Scene();
     this.scene.add(CameraManager.camera);
-    this.renderer = new WebGLRenderer();
+    this.renderer = new WebGLRenderer({ antialias: true });
     addFrameListener(this.update);
     addWindowResizeListener(this.handleResize);
   }

@@ -56,7 +56,6 @@ class AudioManager {
         this.playNextRandomSong();
       }
     }, randomSong.durationS * 1000 + 500);
-    randomSong.audio.onEnded = this.playNextRandomSong;
   };
 
   private getNextSongIndex(): number {

@@ -1,6 +1,12 @@
 import { Audio } from "three";
 
 import { Song } from "../audio/songs";
+import { addSongMuteListener, SongMuteEvent } from "../events/songMute";
+import {
+  addSongPlayPauseListener,
+  dispatchSongPlayPauseEvent,
+  SongPlayPauseEvent,
+} from "../events/songPlayPause";
 import { dispatchSongSpeedEvent } from "../events/songSpeed";
 
 interface SongAudio extends Song {
@@ -20,24 +26,43 @@ class AudioManager {
     this.currentBPM = 0;
     this.currentSong = null;
     dispatchSongSpeedEvent({ bpm: this.currentBPM });
+    addSongPlayPauseListener(this.handlePlayPause);
+    addSongMuteListener(this.handleMute);
   }
 
   attach(songs: SongAudio[]) {
     this.songs = songs;
   }
 
-  play() {
-    if (this.currentSong !== null) {
+  start() {
+    dispatchSongPlayPauseEvent({ play: true });
+    this.play();
+  }
+
+  private play() {
+    if (this.songs.length === 0) {
       return;
     }
-    this.currentSong = Math.floor(Math.random() * this.songs.length);
-    this.playNextRandomSong();
+    if (this.currentSong !== null) {
+      if (!this.isCurrentSongPlaying()) {
+        this.getCurrentAudio()?.play();
+      }
+    } else {
+      this.currentSong = Math.floor(Math.random() * this.songs.length);
+      this.playNextRandomSong();
+    }
+  }
+
+  private pause() {
+    if (this.currentSong !== null && this.songs.length > 0) {
+      this.getCurrentAudio()?.pause();
+    }
   }
 
   private readonly playNextRandomSong = () => {
     // Stop any song that is currently playing
     if (this.isCurrentSongPlaying()) {
-      this.songs[this.currentSong].audio.stop();
+      this.getCurrentAudio()?.stop();
     }
     // Reset timeout if we change songs preemptively
     if (this.currentTimeout !== null) {
@@ -52,9 +77,7 @@ class AudioManager {
     // Set a timer if the current song finishes. The onEnded call is not reliable
     this.currentTimeout = window.setTimeout(() => {
       this.currentTimeout = null;
-      if (this.isCurrentSongPlaying()) {
-        this.playNextRandomSong();
-      }
+      this.playNextRandomSong();
     }, randomSong.durationS * 1000 + 500);
   };
 
@@ -66,10 +89,14 @@ class AudioManager {
     }
   }
 
+  private getCurrentAudio(): Audio | null {
+    return this.currentSong !== null && this.songs.length > 0
+      ? this.songs[this.currentSong].audio
+      : null;
+  }
+
   private isCurrentSongPlaying(): boolean {
-    return (
-      this.currentSong !== null && this.songs[this.currentSong].audio.isPlaying
-    );
+    return this.getCurrentAudio()?.isPlaying || false;
   }
 
   private readonly setNewBPM = (newBPM: number) => {
@@ -90,6 +117,23 @@ class AudioManager {
         this.setNewBPM(newBPM);
       }
     }, AudioManager.CHANGE_INTERVAL);
+  };
+
+  private readonly handlePlayPause = ({ play }: SongPlayPauseEvent) => {
+    if (play) {
+      this.play();
+    } else {
+      this.pause();
+    }
+  };
+
+  private readonly handleMute = ({ muted }: SongMuteEvent) => {
+    const currentAudio = this.getCurrentAudio();
+    if (muted) {
+      currentAudio?.setVolume(0);
+    } else {
+      currentAudio.setVolume(1);
+    }
   };
 }
 

@@ -41,6 +41,7 @@
     "node": "12.x"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "gl-matrix": "^3.3.0",
     "three": "^0.122.0"
   }

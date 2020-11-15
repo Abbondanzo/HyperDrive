@@ -8,12 +8,17 @@ interface SongAudio extends Song {
 }
 
 class AudioManager {
+  private static CHANGE_INTERVAL = 50;
+
   private songs: SongAudio[];
   private currentSong: number | null;
+  private currentBPM: number;
 
   constructor() {
     this.songs = [];
+    this.currentBPM = 0;
     this.currentSong = null;
+    dispatchSongSpeedEvent({ bpm: this.currentBPM });
   }
 
   attach(songs: SongAudio[]) {
@@ -28,8 +33,15 @@ class AudioManager {
   }
 
   private readonly playNextRandomSong = () => {
-    const randomSong = this.songs[this.getRandomSongIndex()];
-    dispatchSongSpeedEvent({ bpm: randomSong.bpm });
+    if (this.currentSong !== null) {
+      if (this.songs[this.currentSong].audio.isPlaying) {
+        this.songs[this.currentSong].audio.stop();
+      }
+    }
+    const nextIndex = this.getRandomSongIndex();
+    this.currentSong = nextIndex;
+    const randomSong = this.songs[nextIndex];
+    this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
     randomSong.audio.onEnded = this.playNextRandomSong;
   };
@@ -40,6 +52,26 @@ class AudioManager {
       randomIndex = Math.floor(Math.random() * this.songs.length);
     return randomIndex;
   }
+
+  private readonly setNewBPM = (newBPM: number) => {
+    if (this.currentBPM === 0) {
+      this.currentBPM = newBPM;
+      dispatchSongSpeedEvent({ bpm: this.currentBPM });
+      return;
+    }
+
+    setTimeout(() => {
+      if (newBPM > this.currentBPM) {
+        this.currentBPM += 1;
+        dispatchSongSpeedEvent({ bpm: this.currentBPM });
+        this.setNewBPM(newBPM);
+      } else if (newBPM < this.currentBPM) {
+        this.currentBPM -= 1;
+        dispatchSongSpeedEvent({ bpm: this.currentBPM });
+        this.setNewBPM(newBPM);
+      }
+    }, AudioManager.CHANGE_INTERVAL);
+  };
 }
 
 export default new AudioManager();

@@ -63,6 +63,10 @@ export class Splash {
     this.loadingManager.onLoad = () => {
       body.innerHTML = "Done";
     };
+    this.loadingManager.onError = () => {
+      body.innerHTML =
+        "There was an error loading. Please refresh and try again";
+    };
   }
 
   private isMobile(): boolean {

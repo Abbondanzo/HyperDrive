@@ -14,6 +14,7 @@ interface SongAudio extends Song {
 }
 
 class AudioManager {
+  private static PLAY_ON_START = false;
   private static CHANGE_INTERVAL = 50;
 
   private songs: SongAudio[];
@@ -35,8 +36,15 @@ class AudioManager {
   }
 
   start() {
-    dispatchSongPlayPauseEvent({ play: true });
-    this.play();
+    if (AudioManager.PLAY_ON_START) {
+      dispatchSongPlayPauseEvent({ play: true });
+      this.play();
+    } else {
+      dispatchSongPlayPauseEvent({ play: false });
+      const nextIndex = this.getNextSongIndex();
+      this.currentSong = nextIndex;
+      this.setNewBPM(this.songs[nextIndex].bpm);
+    }
   }
 
   private play() {

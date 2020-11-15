@@ -1,7 +1,7 @@
 import { Camera, Group, LoadingManager, Scene } from "three";
 
 import { addToWindow } from "../../utils/addToWindow";
-import { loadObject } from "../../utils/loadObject";
+import { loadGLTF } from "../../utils/loadGLTF";
 import { SceneSubject } from "../SceneSubject";
 
 export class Car implements SceneSubject {
@@ -15,11 +15,13 @@ export class Car implements SceneSubject {
   }
 
   async load(loadingManager: LoadingManager) {
-    this.chassis = await loadObject(loadingManager, "models/chassis.obj");
+    this.chassis = await loadGLTF(loadingManager, "models/chassis.gltf");
     // Fine tuning the chassis around origin
     this.chassis.position.x = 0.275;
     this.chassis.position.y = -0.7;
     this.chassis.position.z = -0.1;
+    // TODO: Until we have a fully-developed model, hide this one
+    this.chassis.visible = false;
     addToWindow("chassis", this.chassis);
   }
 

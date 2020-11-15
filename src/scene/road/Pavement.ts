@@ -10,6 +10,7 @@ import {
 } from "three";
 
 import { addFrameListener, FrameEvent } from "../../events/frame";
+import { addSongSpeedListener, SongSpeedEvent } from "../../events/songSpeed";
 import { SceneSubject } from "../SceneSubject";
 
 export class Pavement implements SceneSubject {
@@ -28,8 +29,9 @@ export class Pavement implements SceneSubject {
   constructor() {
     this.height = 10;
     this.width = this.height + Pavement.DISTANCE;
-    this.offsetPerMS = this.getOffsetPerMSFromBPM(170);
+    this.offsetPerMS = 0;
     addFrameListener(this.handleFrame);
+    addSongSpeedListener(this.handleSongSpeed);
   }
 
   async load(loadingManager: LoadingManager) {
@@ -39,6 +41,7 @@ export class Pavement implements SceneSubject {
     // Apply wrapping to texture so it fits in the correct scale. Width is always greater
     this.texture.wrapS = RepeatWrapping;
     this.texture.repeat.set(this.width / this.height, 1);
+    this.texture.anisotropy = 16;
     const material = new MeshBasicMaterial({
       map: this.texture,
     });
@@ -53,16 +56,16 @@ export class Pavement implements SceneSubject {
   }
 
   attach(scene: Scene) {
-    console.log(this.texture);
     scene.add(this.plane);
-  }
-
-  private getOffsetPerMSFromBPM(bpm: number) {
-    return bpm / Pavement.MS_PER_MINUTE;
   }
 
   private readonly handleFrame = ({ delta }: FrameEvent) => {
     const newOffset = (this.texture.offset.x + delta * this.offsetPerMS) % 1;
     this.texture.offset.x = newOffset;
+  };
+
+  private readonly handleSongSpeed = ({ bpm }: SongSpeedEvent) => {
+    const newOffset = bpm / Pavement.MS_PER_MINUTE;
+    this.offsetPerMS = newOffset;
   };
 }

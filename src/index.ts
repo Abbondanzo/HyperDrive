@@ -1,5 +1,6 @@
 import { DefaultLoadingManager } from "three";
 
+import AudioManager from "./manager/AudioManager";
 import SceneManager from "./manager/SceneManager";
 import TimeManager from "./manager/TimeManager";
 import { buildScene } from "./scene/buildScene";
@@ -12,5 +13,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await buildScene(SceneManager.scene, DefaultLoadingManager);
 
+  AudioManager.play();
   TimeManager.play();
 });

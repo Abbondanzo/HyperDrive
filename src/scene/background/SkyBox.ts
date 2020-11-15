@@ -16,7 +16,7 @@ export class SkyBox implements SceneSubject {
     this.cubeTexture = new CubeTextureLoader(loadingManager)
       .setPath("textures/cubemap/")
       .load(["px.png", "nx.png", "py.png", "black.png", "black.png", "nz.png"]);
-    this.fog = new Fog(0x111111, 150, 200);
+    this.fog = new Fog(0x111111, 1, 200);
   }
 
   attach(scene: Scene) {

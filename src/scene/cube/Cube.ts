@@ -14,7 +14,7 @@ export class Cube implements SceneSubject {
     const geometry = new BoxGeometry();
     const material = new MeshPhongMaterial({
       color: 0x00ff00,
-      opacity: 0.5,
+      opacity: 0,
       transparent: true,
     });
     this.cube = new Mesh(geometry, material);

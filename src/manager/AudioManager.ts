@@ -13,6 +13,7 @@ class AudioManager {
   private songs: SongAudio[];
   private currentSong: number | null;
   private currentBPM: number;
+  private currentTimeout: number | null;
 
   constructor() {
     this.songs = [];
@@ -29,28 +30,47 @@ class AudioManager {
     if (this.currentSong !== null) {
       return;
     }
+    this.currentSong = Math.floor(Math.random() * this.songs.length);
     this.playNextRandomSong();
   }
 
   private readonly playNextRandomSong = () => {
-    if (this.currentSong !== null) {
-      if (this.songs[this.currentSong].audio.isPlaying) {
-        this.songs[this.currentSong].audio.stop();
-      }
+    // Stop any song that is currently playing
+    if (this.isCurrentSongPlaying()) {
+      this.songs[this.currentSong].audio.stop();
     }
-    const nextIndex = this.getRandomSongIndex();
+    // Reset timeout if we change songs preemptively
+    if (this.currentTimeout !== null) {
+      clearTimeout(this.currentTimeout);
+    }
+    const nextIndex = this.getNextSongIndex();
     this.currentSong = nextIndex;
     const randomSong = this.songs[nextIndex];
+    console.log(randomSong);
     this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
+    // Set a timer if the current song finishes. The onEnded call is not reliable
+    this.currentTimeout = window.setTimeout(() => {
+      this.currentTimeout = null;
+      if (this.isCurrentSongPlaying()) {
+        this.playNextRandomSong();
+      }
+    }, randomSong.durationS * 1000 + 500);
     randomSong.audio.onEnded = this.playNextRandomSong;
   };
 
-  private getRandomSongIndex(): number {
-    let randomIndex = Math.floor(Math.random() * this.songs.length);
-    while (this.songs.length > 0 && randomIndex === this.currentSong)
-      randomIndex = Math.floor(Math.random() * this.songs.length);
-    return randomIndex;
+  private getNextSongIndex(): number {
+    if (this.currentSong === null) {
+      return Math.floor(Math.random() * this.songs.length);
+    } else {
+      return (this.currentSong + 1) % this.songs.length;
+    }
+  }
+
+  private isCurrentSongPlaying(): boolean {
+    return (
+      this.currentSong !== null && this.songs[this.currentSong].audio.isPlaying
+    );
   }
 
   private readonly setNewBPM = (newBPM: number) => {

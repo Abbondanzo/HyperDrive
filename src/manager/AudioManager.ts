@@ -78,6 +78,7 @@ class AudioManager {
     console.log(randomSong);
     this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
+    // Overrides the internal call to three. Need to set isPlaying manually
     randomSong.audio.source.onended = () => {
       randomSong.audio.isPlaying = false;
       this.playNextRandomSong();

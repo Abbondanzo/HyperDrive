@@ -6,7 +6,7 @@ import { SkyBox } from "./background/SkyBox";
 import { Car } from "./car/Car";
 import { Cube } from "./cube/Cube";
 import { EnvironmentLighting } from "./lighting/EnvironmentLighting";
-import { Pavement } from "./road/Pavement";
+import { Road } from "./road/Road";
 import { SceneSubject } from "./SceneSubject";
 
 export const buildScene = async (
@@ -19,7 +19,7 @@ export const buildScene = async (
     new Car(CameraManager.camera),
     new Cube(),
     new EnvironmentLighting(),
-    new Pavement(),
+    new Road(),
   ];
   // Perform asset loading
   try {

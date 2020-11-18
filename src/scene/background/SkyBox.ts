@@ -19,8 +19,8 @@ export class SkyBox implements SceneSubject {
     this.fog = new Fog(0x111111, 1, 200);
   }
 
-  attach(scene: Scene) {
-    scene.background = this.cubeTexture;
-    scene.fog = this.fog;
+  attach(parent: Scene) {
+    parent.background = this.cubeTexture;
+    parent.fog = this.fog;
   }
 }

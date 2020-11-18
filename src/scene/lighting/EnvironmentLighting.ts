@@ -1,4 +1,4 @@
-import { AmbientLight, PointLight, Scene } from "three";
+import { AmbientLight, Object3D, PointLight } from "three";
 
 import { SceneSubject } from "../SceneSubject";
 
@@ -12,8 +12,8 @@ export class EnvironmentLighting implements SceneSubject {
     this.pointLight.position.set(1, 2, 3);
   }
 
-  attach(scene: Scene) {
-    scene.add(this.ambientLight);
-    scene.add(this.pointLight);
+  attach(parent: Object3D) {
+    parent.add(this.ambientLight);
+    parent.add(this.pointLight);
   }
 }

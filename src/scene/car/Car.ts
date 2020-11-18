@@ -1,4 +1,4 @@
-import { Camera, Group, LoadingManager, Scene } from "three";
+import { Camera, Group, LoadingManager, Object3D } from "three";
 
 import { addToWindow } from "../../utils/addToWindow";
 import { loadGLTF } from "../../utils/loadGLTF";
@@ -21,15 +21,15 @@ export class Car implements SceneSubject {
     this.chassis.position.y = -0.7;
     this.chassis.position.z = -0.1;
     // TODO: Until we have a fully-developed model, hide this one
-    this.chassis.visible = true;
+    this.chassis.visible = false;
     addToWindow("chassis", this.chassis);
   }
 
-  attach(scene: Scene) {
+  attach(parent: Object3D) {
     const group = new Group();
     group.name = Car.GROUP_NAME;
     group.add(this.chassis);
     group.add(this.camera);
-    scene.add(group);
+    parent.add(group);
   }
 }

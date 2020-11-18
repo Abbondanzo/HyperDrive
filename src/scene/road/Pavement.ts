@@ -2,9 +2,9 @@ import {
   LoadingManager,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
   PlaneGeometry,
   RepeatWrapping,
-  Scene,
   Texture,
   TextureLoader,
 } from "three";
@@ -47,16 +47,13 @@ export class Pavement implements SceneSubject {
     });
     const geometry = new PlaneGeometry(this.width, this.height, 32);
     this.plane = new Mesh(geometry, material);
-    // Offset from car
-    this.plane.position.x = 0.275 * 2; // 2x the Car x offset
-    this.plane.position.y = -1.5;
     // Rotate so lengthwise
     this.plane.rotation.x = -Pavement.NINTETY_DEGREES;
     this.plane.rotation.z = Pavement.NINTETY_DEGREES;
   }
 
-  attach(scene: Scene) {
-    scene.add(this.plane);
+  attach(parent: Object3D) {
+    parent.add(this.plane);
   }
 
   private readonly handleFrame = ({ delta }: FrameEvent) => {
@@ -65,7 +62,7 @@ export class Pavement implements SceneSubject {
   };
 
   private readonly handleSongSpeed = ({ bpm }: SongSpeedEvent) => {
-    const newOffset = bpm / Pavement.MS_PER_MINUTE;
+    const newOffset = (bpm / Pavement.MS_PER_MINUTE) * 2;
     this.offsetPerMS = newOffset;
   };
 }

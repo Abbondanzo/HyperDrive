@@ -1,6 +1,7 @@
-import { LoadingManager, Scene } from "three";
+import { LoadingManager, Object3D } from "three";
 
 export interface SceneSubject {
+  name: string;
   load(loadingManager: LoadingManager): Promise<void>;
-  attach(scene: Scene): void;
+  attach(parent: Object3D): void;
 }

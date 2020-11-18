@@ -16,12 +16,10 @@ interface SongAudio extends Song {
 class AudioManager {
   private static PLAY_ON_START = true;
   private static CHANGE_INTERVAL = 50;
-  private static PER_SONG_DELAY = 500;
 
   private songs: SongAudio[];
   private currentSong: number | null;
   private currentBPM: number;
-  private currentTimeout: number | null;
 
   constructor() {
     this.songs = [];
@@ -36,8 +34,12 @@ class AudioManager {
     this.songs = songs;
   }
 
-  start() {
-    if (AudioManager.PLAY_ON_START) {
+  start(playOnStart: boolean = AudioManager.PLAY_ON_START) {
+    if (this.songs.length === 0) {
+      return;
+    }
+
+    if (playOnStart) {
       dispatchSongPlayPauseEvent({ play: true });
       this.play();
     } else {
@@ -74,20 +76,17 @@ class AudioManager {
       this.getCurrentAudio()?.stop();
     }
     // Reset timeout if we change songs preemptively
-    if (this.currentTimeout !== null) {
-      clearTimeout(this.currentTimeout);
-    }
     const nextIndex = this.getNextSongIndex();
     this.currentSong = nextIndex;
     const randomSong = this.songs[nextIndex];
     console.log(randomSong);
     this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
-    // Set a timer if the current song finishes. The onEnded call is not reliable
-    this.currentTimeout = window.setTimeout(() => {
-      this.currentTimeout = null;
+    // Overrides the internal call to three. Need to set isPlaying manually
+    randomSong.audio.source.onended = () => {
+      randomSong.audio.isPlaying = false;
       this.playNextRandomSong();
-    }, randomSong.durationS * 1000 + AudioManager.PER_SONG_DELAY);
+    };
   };
 
   private getNextSongIndex(): number {

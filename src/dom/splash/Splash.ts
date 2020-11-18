@@ -1,6 +1,6 @@
 import { LoadingManager } from "three";
 
-type Callback = (loadingManager: LoadingManager) => void;
+type Callback = (loadingManager: LoadingManager, withSound: boolean) => void;
 
 export class Splash {
   readonly container: HTMLDivElement;
@@ -39,9 +39,19 @@ export class Splash {
     button.innerHTML = "Launch";
     button.addEventListener("click", () => {
       this.showLoadingManager();
-      this.onClickCallback(this.loadingManager);
+      this.onClickCallback(this.loadingManager, true);
     });
     this.container.appendChild(button);
+    //
+    const noAudioLink = document.createElement("a");
+    noAudioLink.innerHTML = "Launch Without Sound";
+    noAudioLink.addEventListener("click", () => {
+      this.showLoadingManager();
+      this.onClickCallback(this.loadingManager, false);
+    });
+    const spanContainer = document.createElement("span");
+    spanContainer.appendChild(noAudioLink);
+    this.container.appendChild(spanContainer);
   }
 
   private showLoadingManager() {
@@ -61,7 +71,11 @@ export class Splash {
     this.loadingManager.onStart = percentHandler;
     this.loadingManager.onProgress = percentHandler;
     this.loadingManager.onLoad = () => {
-      body.innerHTML = "Done";
+      body.innerHTML = "Building scene... <br />";
+    };
+    this.loadingManager.onError = () => {
+      body.innerHTML =
+        "There was an error loading. Please refresh and try again";
     };
   }
 

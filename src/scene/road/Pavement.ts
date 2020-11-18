@@ -1,22 +1,26 @@
 import {
   LoadingManager,
   Mesh,
-  MeshBasicMaterial,
+  MeshPhongMaterial,
+  Object3D,
   PlaneGeometry,
   RepeatWrapping,
-  Scene,
   Texture,
   TextureLoader,
 } from "three";
 
 import { addFrameListener, FrameEvent } from "../../events/frame";
-import { addSongSpeedListener, SongSpeedEvent } from "../../events/songSpeed";
 import { SceneSubject } from "../SceneSubject";
+import { MovingObject } from "./MovingObject";
 
-export class Pavement implements SceneSubject {
-  private static MS_PER_MINUTE = 60000;
+export class Pavement extends MovingObject implements SceneSubject {
+  name = "Pavement";
+
+  static SQUARE_SIZE = 10;
+  static OFFSET_MULTIPLIER = 2;
+
   private static NINTETY_DEGREES = Math.PI / 2;
-  private static DISTANCE = 2000;
+  private static DISTANCE = 600;
 
   private height: number;
   private width: number;
@@ -24,14 +28,12 @@ export class Pavement implements SceneSubject {
   private plane: Mesh;
   private texture: Texture;
 
-  private offsetPerMS: number;
-
   constructor() {
-    this.height = 10;
+    super();
+    this.height = Pavement.SQUARE_SIZE;
     this.width = this.height + Pavement.DISTANCE;
-    this.offsetPerMS = 0;
+    this.offsetMultiplier = Pavement.OFFSET_MULTIPLIER;
     addFrameListener(this.handleFrame);
-    addSongSpeedListener(this.handleSongSpeed);
   }
 
   async load(loadingManager: LoadingManager) {
@@ -42,30 +44,23 @@ export class Pavement implements SceneSubject {
     this.texture.wrapS = RepeatWrapping;
     this.texture.repeat.set(this.width / this.height, 1);
     this.texture.anisotropy = 16;
-    const material = new MeshBasicMaterial({
+    const material = new MeshPhongMaterial({
       map: this.texture,
+      shininess: 0,
     });
     const geometry = new PlaneGeometry(this.width, this.height, 32);
     this.plane = new Mesh(geometry, material);
-    // Offset from car
-    this.plane.position.x = -1.5;
-    this.plane.position.y = -1.5;
     // Rotate so lengthwise
     this.plane.rotation.x = -Pavement.NINTETY_DEGREES;
     this.plane.rotation.z = Pavement.NINTETY_DEGREES;
   }
 
-  attach(scene: Scene) {
-    scene.add(this.plane);
+  attach(parent: Object3D) {
+    parent.add(this.plane);
   }
 
   private readonly handleFrame = ({ delta }: FrameEvent) => {
     const newOffset = (this.texture.offset.x + delta * this.offsetPerMS) % 1;
     this.texture.offset.x = newOffset;
-  };
-
-  private readonly handleSongSpeed = ({ bpm }: SongSpeedEvent) => {
-    const newOffset = bpm / Pavement.MS_PER_MINUTE;
-    this.offsetPerMS = newOffset;
   };
 }

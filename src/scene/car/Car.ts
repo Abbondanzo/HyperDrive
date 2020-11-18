@@ -1,10 +1,12 @@
-import { Camera, Group, LoadingManager, Scene } from "three";
+import { Camera, Group, LoadingManager, Object3D } from "three";
 
 import { addToWindow } from "../../utils/addToWindow";
 import { loadGLTF } from "../../utils/loadGLTF";
 import { SceneSubject } from "../SceneSubject";
 
 export class Car implements SceneSubject {
+  name = "Car";
+
   private static GROUP_NAME = "CAR_CAMERA_GROUP";
 
   private camera: Camera;
@@ -25,11 +27,11 @@ export class Car implements SceneSubject {
     addToWindow("chassis", this.chassis);
   }
 
-  attach(scene: Scene) {
+  attach(parent: Object3D) {
     const group = new Group();
     group.name = Car.GROUP_NAME;
     group.add(this.chassis);
     group.add(this.camera);
-    scene.add(group);
+    parent.add(group);
   }
 }

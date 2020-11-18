@@ -2,12 +2,13 @@ import { LoadingManager } from "three";
 
 import { buildControls } from "./dom/buildControls";
 import { displaySplash } from "./dom/displaySplash";
+import { displayStats } from "./dom/displayStats";
 import AudioManager from "./manager/AudioManager";
 import SceneManager from "./manager/SceneManager";
 import TimeManager from "./manager/TimeManager";
 import { buildScene } from "./scene/buildScene";
 
-const launch = async (loadingManager: LoadingManager) => {
+const launch = async (loadingManager: LoadingManager, withSound: boolean) => {
   const splashContainer = document.getElementById(
     "splash-container"
   ) as HTMLDivElement;
@@ -23,7 +24,9 @@ const launch = async (loadingManager: LoadingManager) => {
   canvasContainer.classList.add("fade-in");
   canvasContainer.classList.remove("hidden");
 
-  AudioManager.start();
+  displayStats(canvasContainer);
+
+  AudioManager.start(withSound);
   TimeManager.play();
 };
 

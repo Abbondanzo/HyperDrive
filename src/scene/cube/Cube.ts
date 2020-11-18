@@ -4,6 +4,8 @@ import { addFrameListener } from "../../events/frame";
 import { SceneSubject } from "../SceneSubject";
 
 export class Cube implements SceneSubject {
+  name = "Cube";
+
   private cube: Mesh;
 
   constructor() {

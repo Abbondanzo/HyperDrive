@@ -1,5 +1,9 @@
 import { Camera, Euler, EventDispatcher, Vector3 } from "three";
 
+/**
+ * A version of PointerLockControls that supports horizontal locking and sensitivity controls.
+ * https://threejs.org/docs/#examples/en/controls/PointerLockControls
+ */
 export class BetterPointerLockControls extends EventDispatcher {
   private static PI_2 = Math.PI / 2;
   private static CHANGE_EVENT = { type: "change" };

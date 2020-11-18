@@ -1,6 +1,7 @@
 import { LoadingManager, Scene } from "three";
 
 import CameraManager from "../manager/CameraManager";
+import { isDevelopment } from "../utils/isDevelopment";
 import { Songs } from "./audio/Songs";
 import { SkyBox } from "./background/SkyBox";
 import { Car } from "./car/Car";
@@ -23,13 +24,30 @@ export const buildScene = async (
   ];
   // Perform asset loading
   try {
-    await Promise.all(
-      sceneSubjects.map((subject) => subject.load(loadingManager))
+    const loadTimes = await Promise.all(
+      sceneSubjects.map((subject) =>
+        measurePromise(subject.name, () => subject.load(loadingManager))
+      )
     );
+    if (isDevelopment()) {
+      console.info(loadTimes);
+    }
   } catch (err) {
     console.error(err);
   }
 
   // Attach each object to the scene
   sceneSubjects.forEach((subject) => subject.attach(scene));
+};
+
+const measurePromise = (
+  name: string,
+  fn: () => Promise<any>
+): Promise<[string, number]> => {
+  const onPromiseDone = (): [string, number] => [
+    name,
+    performance.now() - start,
+  ];
+  const start = performance.now();
+  return fn().then(onPromiseDone, onPromiseDone);
 };

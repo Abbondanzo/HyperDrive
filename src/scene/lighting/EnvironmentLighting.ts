@@ -3,6 +3,8 @@ import { AmbientLight, HemisphereLight, Object3D, PointLight } from "three";
 import { SceneSubject } from "../SceneSubject";
 
 export class EnvironmentLighting implements SceneSubject {
+  name = "Environment Lighting";
+
   private ambientLight: AmbientLight;
   private pointLight: PointLight;
   private hemisphereLight: HemisphereLight;

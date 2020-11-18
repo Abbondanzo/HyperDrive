@@ -4,9 +4,12 @@ import { addFrameListener, FrameEvent } from "../../events/frame";
 import { loadGLTF } from "../../utils/loadGLTF";
 import { SceneSubject } from "../SceneSubject";
 import { MovingObject } from "./MovingObject";
+import { Pavement } from "./Pavement";
 
 export class Lamps extends MovingObject implements SceneSubject {
-  private static GAP_DISTANCE = 40;
+  name = "Lamps";
+
+  private static GAP_DISTANCE = 80;
   private static TOTAL_DISTANCE = 200;
 
   private lampModel: Group;
@@ -14,7 +17,8 @@ export class Lamps extends MovingObject implements SceneSubject {
 
   constructor() {
     super();
-    this.offsetMultiplier = 0.5;
+    this.offsetMultiplier =
+      (Pavement.SQUARE_SIZE / Lamps.GAP_DISTANCE) * Pavement.OFFSET_MULTIPLIER;
     addFrameListener(this.handleFrame);
   }
 
@@ -55,11 +59,13 @@ export class Lamps extends MovingObject implements SceneSubject {
   }
 
   private addLightToLamp(lamp: Group) {
-    const spotlight = new SpotLight(0xffffff);
+    const spotlight = new SpotLight(0xffffdd);
+    spotlight.intensity = 2;
+    spotlight.penumbra = 0.5;
     const boundingBox = new Box3().setFromObject(lamp);
     const x = boundingBox.min.x;
     const y = boundingBox.max.y;
-    const z = boundingBox.max.z - boundingBox.min.z;
+    const z = (boundingBox.max.z + boundingBox.min.z) / 2;
     spotlight.position.set(x, y, z);
     spotlight.lookAt(x, 0, z);
     lamp.add(spotlight);

@@ -10,13 +10,17 @@ import {
 } from "three";
 
 import { addFrameListener, FrameEvent } from "../../events/frame";
-import { addSongSpeedListener, SongSpeedEvent } from "../../events/songSpeed";
 import { SceneSubject } from "../SceneSubject";
+import { MovingObject } from "./MovingObject";
 
-export class Pavement implements SceneSubject {
-  private static MS_PER_MINUTE = 60000;
+export class Pavement extends MovingObject implements SceneSubject {
+  name = "Pavement";
+
+  static SQUARE_SIZE = 10;
+  static OFFSET_MULTIPLIER = 2;
+
   private static NINTETY_DEGREES = Math.PI / 2;
-  private static DISTANCE = 2000;
+  private static DISTANCE = 600;
 
   private height: number;
   private width: number;
@@ -24,14 +28,12 @@ export class Pavement implements SceneSubject {
   private plane: Mesh;
   private texture: Texture;
 
-  private offsetPerMS: number;
-
   constructor() {
-    this.height = 10;
+    super();
+    this.height = Pavement.SQUARE_SIZE;
     this.width = this.height + Pavement.DISTANCE;
-    this.offsetPerMS = 0;
+    this.offsetMultiplier = Pavement.OFFSET_MULTIPLIER;
     addFrameListener(this.handleFrame);
-    addSongSpeedListener(this.handleSongSpeed);
   }
 
   async load(loadingManager: LoadingManager) {
@@ -60,10 +62,5 @@ export class Pavement implements SceneSubject {
   private readonly handleFrame = ({ delta }: FrameEvent) => {
     const newOffset = (this.texture.offset.x + delta * this.offsetPerMS) % 1;
     this.texture.offset.x = newOffset;
-  };
-
-  private readonly handleSongSpeed = ({ bpm }: SongSpeedEvent) => {
-    const newOffset = (bpm / Pavement.MS_PER_MINUTE) * 2;
-    this.offsetPerMS = newOffset;
   };
 }

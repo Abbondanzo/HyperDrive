@@ -5,6 +5,8 @@ import { loadGLTF } from "../../utils/loadGLTF";
 import { SceneSubject } from "../SceneSubject";
 
 export class Car implements SceneSubject {
+  name = "Car";
+
   private static GROUP_NAME = "CAR_CAMERA_GROUP";
 
   private camera: Camera;

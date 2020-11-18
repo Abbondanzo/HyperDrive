@@ -1,8 +1,10 @@
-import { addFrameListener } from "../events/frame";
 import Stats from "stats.js";
 
+import { addFrameListener } from "../events/frame";
+import { isDevelopment } from "../utils/isDevelopment";
+
 export const displayStats = (container: HTMLElement) => {
-  if (process.env.NODE_ENV !== "development") {
+  if (!isDevelopment()) {
     return;
   }
 

@@ -71,7 +71,7 @@ export class Splash {
     this.loadingManager.onStart = percentHandler;
     this.loadingManager.onProgress = percentHandler;
     this.loadingManager.onLoad = () => {
-      body.innerHTML = "Done <br />";
+      body.innerHTML = "Building scene... <br />";
     };
     this.loadingManager.onError = () => {
       body.innerHTML =

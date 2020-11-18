@@ -8,13 +8,20 @@ import { BetterPointerLockControls } from "../scene/controls/BetterPointerLockCo
 
 class CameraManager {
   private static DEFAULT_FOV = 60;
+  private static NEAR = 0.1;
+  private static FAR = 500;
 
   readonly camera: PerspectiveCamera;
 
   private controls: BetterPointerLockControls;
 
   constructor() {
-    this.camera = new PerspectiveCamera(CameraManager.DEFAULT_FOV);
+    this.camera = new PerspectiveCamera(
+      CameraManager.DEFAULT_FOV,
+      1,
+      CameraManager.NEAR,
+      CameraManager.FAR
+    );
     addWindowResizeListener(this.updateSize);
   }
 

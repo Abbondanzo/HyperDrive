@@ -9,6 +9,8 @@ import {
 import { SceneSubject } from "../SceneSubject";
 
 export class SkyBox implements SceneSubject {
+  name = "Sky Box";
+
   private cubeTexture: CubeTexture;
   private fog: Fog;
 

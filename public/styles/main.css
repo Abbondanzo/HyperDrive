@@ -49,6 +49,13 @@ Pre-scene
 
 #splash a {
   cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+#splash a:hover,
+#splash a:focus {
+  opacity: 1;
 }
 
 #splash button {

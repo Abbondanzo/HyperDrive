@@ -5,6 +5,8 @@ import { Lamps } from "./Lamps";
 import { Pavement } from "./Pavement";
 
 export class Road implements SceneSubject {
+  name = "Road";
+
   private readonly subjects: SceneSubject[];
   private readonly group: Group;
 

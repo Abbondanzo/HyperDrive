@@ -1,14 +1,6 @@
-import {
-  Box3,
-  Group,
-  LoadingManager,
-  Object3D,
-  SpotLight,
-  Vector3,
-} from "three";
+import { Box3, Group, LoadingManager, Object3D, SpotLight } from "three";
 
 import { addFrameListener, FrameEvent } from "../../events/frame";
-import { addToWindow } from "../../utils/addToWindow";
 import { loadGLTF } from "../../utils/loadGLTF";
 import { SceneSubject } from "../SceneSubject";
 import { MovingObject } from "./MovingObject";
@@ -28,7 +20,6 @@ export class Lamps extends MovingObject implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     this.lampModel = await loadGLTF(loadingManager, "models/lamp.gltf");
-    addToWindow("lamp", this.lampModel);
   }
 
   attach(parent: Object3D) {

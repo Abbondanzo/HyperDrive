@@ -7,7 +7,7 @@ import SceneManager from "./manager/SceneManager";
 import TimeManager from "./manager/TimeManager";
 import { buildScene } from "./scene/buildScene";
 
-const launch = async (loadingManager: LoadingManager) => {
+const launch = async (loadingManager: LoadingManager, withSound: boolean) => {
   const splashContainer = document.getElementById(
     "splash-container"
   ) as HTMLDivElement;
@@ -23,7 +23,7 @@ const launch = async (loadingManager: LoadingManager) => {
   canvasContainer.classList.add("fade-in");
   canvasContainer.classList.remove("hidden");
 
-  AudioManager.start();
+  AudioManager.start(withSound);
   TimeManager.play();
 };
 

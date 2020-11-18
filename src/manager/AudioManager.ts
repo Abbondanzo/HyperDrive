@@ -78,7 +78,10 @@ class AudioManager {
     console.log(randomSong);
     this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
-    randomSong.audio.source.onended = this.playNextRandomSong;
+    randomSong.audio.source.onended = () => {
+      randomSong.audio.isPlaying = false;
+      this.playNextRandomSong();
+    };
   };
 
   private getNextSongIndex(): number {

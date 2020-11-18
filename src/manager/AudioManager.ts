@@ -34,8 +34,8 @@ class AudioManager {
     this.songs = songs;
   }
 
-  start() {
-    if (AudioManager.PLAY_ON_START) {
+  start(playOnStart: boolean = AudioManager.PLAY_ON_START) {
+    if (playOnStart) {
       dispatchSongPlayPauseEvent({ play: true });
       this.play();
     } else {

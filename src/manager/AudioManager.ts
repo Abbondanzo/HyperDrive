@@ -16,12 +16,10 @@ interface SongAudio extends Song {
 class AudioManager {
   private static PLAY_ON_START = true;
   private static CHANGE_INTERVAL = 50;
-  private static PER_SONG_DELAY = 500;
 
   private songs: SongAudio[];
   private currentSong: number | null;
   private currentBPM: number;
-  private currentTimeout: number | null;
 
   constructor() {
     this.songs = [];
@@ -74,20 +72,13 @@ class AudioManager {
       this.getCurrentAudio()?.stop();
     }
     // Reset timeout if we change songs preemptively
-    if (this.currentTimeout !== null) {
-      clearTimeout(this.currentTimeout);
-    }
     const nextIndex = this.getNextSongIndex();
     this.currentSong = nextIndex;
     const randomSong = this.songs[nextIndex];
     console.log(randomSong);
     this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
-    // Set a timer if the current song finishes. The onEnded call is not reliable
-    this.currentTimeout = window.setTimeout(() => {
-      this.currentTimeout = null;
-      this.playNextRandomSong();
-    }, randomSong.durationS * 1000 + AudioManager.PER_SONG_DELAY);
+    randomSong.audio.source.onended = this.playNextRandomSong;
   };
 
   private getNextSongIndex(): number {

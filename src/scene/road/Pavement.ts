@@ -1,7 +1,7 @@
 import {
   LoadingManager,
   Mesh,
-  MeshBasicMaterial,
+  MeshPhongMaterial,
   Object3D,
   PlaneGeometry,
   RepeatWrapping,
@@ -42,8 +42,9 @@ export class Pavement implements SceneSubject {
     this.texture.wrapS = RepeatWrapping;
     this.texture.repeat.set(this.width / this.height, 1);
     this.texture.anisotropy = 16;
-    const material = new MeshBasicMaterial({
+    const material = new MeshPhongMaterial({
       map: this.texture,
+      shininess: 0,
     });
     const geometry = new PlaneGeometry(this.width, this.height, 32);
     this.plane = new Mesh(geometry, material);

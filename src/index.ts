@@ -2,6 +2,7 @@ import { LoadingManager } from "three";
 
 import { buildControls } from "./dom/buildControls";
 import { displaySplash } from "./dom/displaySplash";
+import { displayStats } from "./dom/displayStats";
 import AudioManager from "./manager/AudioManager";
 import SceneManager from "./manager/SceneManager";
 import TimeManager from "./manager/TimeManager";
@@ -22,6 +23,8 @@ const launch = async (loadingManager: LoadingManager, withSound: boolean) => {
   splashContainer.classList.add("hidden");
   canvasContainer.classList.add("fade-in");
   canvasContainer.classList.remove("hidden");
+
+  displayStats(canvasContainer);
 
   AudioManager.start(withSound);
   TimeManager.play();

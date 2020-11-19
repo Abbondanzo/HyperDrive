@@ -1,6 +1,7 @@
 import { LoadingManager } from "three";
 
 import { buildControls } from "./dom/buildControls";
+import { displayError } from "./dom/displayError";
 import { displaySplash } from "./dom/displaySplash";
 import { displayStats } from "./dom/displayStats";
 import AudioManager from "./manager/AudioManager";
@@ -17,7 +18,12 @@ const launch = async (loadingManager: LoadingManager, withSound: boolean) => {
   ) as HTMLDivElement;
   SceneManager.attach(canvasContainer);
 
-  await buildScene(SceneManager.scene, loadingManager);
+  const built = await buildScene(SceneManager.scene, loadingManager);
+  if (!built) {
+    displayError(splashContainer);
+    return;
+  }
+
   buildControls(canvasContainer);
 
   splashContainer.classList.add("hidden");

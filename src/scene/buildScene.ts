@@ -13,7 +13,7 @@ import { SceneSubject } from "./SceneSubject";
 export const buildScene = async (
   scene: Scene,
   loadingManager: LoadingManager
-) => {
+): Promise<boolean> => {
   const sceneSubjects: SceneSubject[] = [
     new Songs(CameraManager.camera),
     new SkyBox(),
@@ -34,10 +34,12 @@ export const buildScene = async (
     }
   } catch (err) {
     console.error(err);
+    return false;
   }
 
   // Attach each object to the scene
   sceneSubjects.forEach((subject) => subject.attach(scene));
+  return true;
 };
 
 const measurePromise = (

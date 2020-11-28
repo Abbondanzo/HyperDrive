@@ -24,7 +24,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private static FULL_SQUARE_SIZE = 12;
 
   private static ROTATE_O = true;
-  private static ROTATE_AFFECTED_ROWS = 8;
+  private static ROTATE_AFFECTED_ROWS = 20;
   private static ROTATE_MIN = Math.PI / 3;
 
   private readonly instanceCount: number;
@@ -142,7 +142,6 @@ export class Buildings extends MovingObject implements SceneSubject {
   private computeRotateO() {
     const closestRow =
       (this.lastZOffset % Buildings.DISTANCE) / Buildings.FULL_SQUARE_SIZE;
-    const furthestRow = (closestRow - 1 + this.length) % this.length;
     const offset =
       (this.lastZOffset +
         Buildings.FULL_SQUARE_SIZE * 4 -
@@ -151,30 +150,47 @@ export class Buildings extends MovingObject implements SceneSubject {
 
     const stepSize = 1 / Buildings.ROTATE_AFFECTED_ROWS;
 
+    for (let idx = 0; idx < this.length; idx++) {
+      const zRow = (closestRow + idx) % this.length;
+      let theta = 0;
+
+      // Only apply theta in the further rows
+      if (this.length - idx <= Buildings.ROTATE_AFFECTED_ROWS) {
+        const step = Buildings.ROTATE_AFFECTED_ROWS - (this.length - idx);
+        const pctOffset = Math.min(step * stepSize + offset * stepSize, 1);
+        theta = pctOffset * Buildings.ROTATE_MIN;
+      }
+
+      this.applyRowRotation(zRow, theta);
+    }
+
+    this.leftInstance.instanceMatrix.needsUpdate = true;
+  }
+
+  private applyRowRotation(zRow: number, theta: number) {
     const position = new Vector3();
     const quaternion = new Quaternion();
     const scale = new Vector3();
 
-    for (let idx = Buildings.ROTATE_AFFECTED_ROWS; idx >= 0; idx--) {
-      const step = Buildings.ROTATE_AFFECTED_ROWS - idx;
-      const zRow = (furthestRow - idx + this.length) % this.length;
-      const pctOffset = Math.min(step * stepSize + offset * stepSize, 1);
-      const theta = 0 - pctOffset * -Buildings.ROTATE_MIN;
-      if (zRow === 0) {
-        console.log(pctOffset);
-      }
+    for (let width = 0; width < this.width; width++) {
+      const mIdx = zRow * this.width + width;
 
-      for (let width = 0; width < this.width; width++) {
-        const mIdx = zRow * this.width + width;
-        let matrix = new Matrix4();
-        this.leftInstance.getMatrixAt(mIdx, matrix);
-        matrix.decompose(position, quaternion, scale);
-        quaternion.setFromAxisAngle(new Vector3(0, 0, 1), theta);
-        matrix = matrix.compose(position, quaternion, scale);
-        this.leftInstance.setMatrixAt(mIdx, matrix);
-      }
+      let matrix = new Matrix4();
+      this.leftInstance.getMatrixAt(mIdx, matrix);
+      matrix.decompose(position, quaternion, scale);
+      quaternion.setFromAxisAngle(new Vector3(0, 0, 1), theta);
+      matrix = matrix.compose(position, quaternion, scale);
+      this.leftInstance.setMatrixAt(mIdx, matrix);
+
+      matrix = new Matrix4();
+      this.rightInstance.getMatrixAt(mIdx, matrix);
+      matrix.decompose(position, quaternion, scale);
+      quaternion.setFromAxisAngle(new Vector3(0, 0, 1), -theta);
+      matrix = matrix.compose(position, quaternion, scale);
+      this.rightInstance.setMatrixAt(mIdx, matrix);
     }
 
     this.leftInstance.instanceMatrix.needsUpdate = true;
+    this.rightInstance.instanceMatrix.needsUpdate = true;
   }
 }

@@ -1,6 +1,7 @@
 import { Group, LoadingManager, Object3D } from "three";
 
 import { SceneSubject } from "../SceneSubject";
+import { Buildings } from "./Buildings";
 import { Lamps } from "./Lamps";
 import { Pavement } from "./Pavement";
 
@@ -11,7 +12,7 @@ export class Road implements SceneSubject {
   private readonly group: Group;
 
   constructor() {
-    this.subjects = [new Lamps(), new Pavement()];
+    this.subjects = [new Lamps(), new Pavement(), new Buildings()];
     this.group = new Group();
     this.group.name = "Road";
   }

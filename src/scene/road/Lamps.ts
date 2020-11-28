@@ -9,7 +9,7 @@ import { Pavement } from "./Pavement";
 export class Lamps extends MovingObject implements SceneSubject {
   name = "Lamps";
 
-  private static GAP_DISTANCE = 80;
+  static GAP_DISTANCE = 80;
   private static TOTAL_DISTANCE = 200;
 
   private lampModel: Group;

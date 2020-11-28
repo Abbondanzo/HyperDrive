@@ -24,7 +24,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private static FULL_SQUARE_SIZE = 12;
 
   private static ROTATE_O = true;
-  private static ROTATE_MAX = 0;
+  private static ROTATE_AFFECTED_ROWS = 8;
   private static ROTATE_MIN = Math.PI / 3;
 
   private readonly instanceCount: number;
@@ -142,24 +142,27 @@ export class Buildings extends MovingObject implements SceneSubject {
   private computeRotateO() {
     const closestRow =
       (this.lastZOffset % Buildings.DISTANCE) / Buildings.FULL_SQUARE_SIZE;
-    // const furthestRow = (closestRow - 1 + this.length) % this.length
+    const furthestRow = (closestRow - 1 + this.length) % this.length;
     const offset =
       (this.lastZOffset +
         Buildings.FULL_SQUARE_SIZE * 4 -
         this.leftInstance.position.z) /
       Buildings.FULL_SQUARE_SIZE;
 
-    const stepSize = 1 / this.length;
+    const stepSize = 1 / Buildings.ROTATE_AFFECTED_ROWS;
 
     const position = new Vector3();
     const quaternion = new Quaternion();
     const scale = new Vector3();
 
-    for (let idx = 0; idx < this.length; idx++) {
-      const zRow = (closestRow + idx) % this.length;
-      const pctOffset = Math.min(idx * stepSize + offset * stepSize, 1);
-      const theta = pctOffset * Buildings.ROTATE_MIN;
-      const rotationMatrix = new Matrix4().makeRotationX(theta);
+    for (let idx = Buildings.ROTATE_AFFECTED_ROWS; idx >= 0; idx--) {
+      const step = Buildings.ROTATE_AFFECTED_ROWS - idx;
+      const zRow = (furthestRow - idx + this.length) % this.length;
+      const pctOffset = Math.min(step * stepSize + offset * stepSize, 1);
+      const theta = 0 - pctOffset * -Buildings.ROTATE_MIN;
+      if (zRow === 0) {
+        console.log(pctOffset);
+      }
 
       for (let width = 0; width < this.width; width++) {
         const mIdx = zRow * this.width + width;

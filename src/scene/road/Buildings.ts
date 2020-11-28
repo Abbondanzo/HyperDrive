@@ -48,7 +48,7 @@ export class Buildings extends MovingObject implements SceneSubject {
     const baseSize = Buildings.SQUARE_SIZE;
     const minHeight = Buildings.SQUARE_SIZE * 2;
     const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
-    const material = new MeshPhongMaterial({ color: 0xff0000 });
+    const material = new MeshPhongMaterial({ color: 0x000000 });
 
     this.leftInstance = new InstancedMesh(
       boxGeometry,

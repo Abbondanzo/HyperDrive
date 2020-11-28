@@ -23,6 +23,10 @@ export class Buildings extends MovingObject implements SceneSubject {
   private static SQUARE_SIZE = 10;
   private static FULL_SQUARE_SIZE = 12;
 
+  private static ROTATE_O = true;
+  private static ROTATE_MAX = 0;
+  private static ROTATE_MIN = Math.PI / 3;
+
   private readonly instanceCount: number;
   private readonly length: number;
   private readonly width: number;
@@ -127,7 +131,47 @@ export class Buildings extends MovingObject implements SceneSubject {
       this.lastZOffset += Buildings.FULL_SQUARE_SIZE;
     }
 
+    if (Buildings.ROTATE_O) {
+      this.computeRotateO();
+    }
+
     this.leftInstance.position.z = newOffset;
     this.rightInstance.position.z = newOffset;
   };
+
+  private computeRotateO() {
+    const closestRow =
+      (this.lastZOffset % Buildings.DISTANCE) / Buildings.FULL_SQUARE_SIZE;
+    // const furthestRow = (closestRow - 1 + this.length) % this.length
+    const offset =
+      (this.lastZOffset +
+        Buildings.FULL_SQUARE_SIZE * 4 -
+        this.leftInstance.position.z) /
+      Buildings.FULL_SQUARE_SIZE;
+
+    const stepSize = 1 / this.length;
+
+    const position = new Vector3();
+    const quaternion = new Quaternion();
+    const scale = new Vector3();
+
+    for (let idx = 0; idx < this.length; idx++) {
+      const zRow = (closestRow + idx) % this.length;
+      const pctOffset = Math.min(idx * stepSize + offset * stepSize, 1);
+      const theta = pctOffset * Buildings.ROTATE_MIN;
+      const rotationMatrix = new Matrix4().makeRotationX(theta);
+
+      for (let width = 0; width < this.width; width++) {
+        const mIdx = zRow * this.width + width;
+        let matrix = new Matrix4();
+        this.leftInstance.getMatrixAt(mIdx, matrix);
+        matrix.decompose(position, quaternion, scale);
+        quaternion.setFromAxisAngle(new Vector3(0, 0, 1), theta);
+        matrix = matrix.compose(position, quaternion, scale);
+        this.leftInstance.setMatrixAt(mIdx, matrix);
+      }
+    }
+
+    this.leftInstance.instanceMatrix.needsUpdate = true;
+  }
 }

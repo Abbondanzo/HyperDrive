@@ -1,6 +1,5 @@
 import {
   BoxBufferGeometry,
-  Euler,
   InstancedMesh,
   Matrix4,
   MeshPhongMaterial,
@@ -8,8 +7,8 @@ import {
   Quaternion,
   Vector3,
 } from "three";
-import { addFrameListener, FrameEvent } from "../../events/frame";
 
+import { addFrameListener, FrameEvent } from "../../events/frame";
 import { SceneSubject } from "../SceneSubject";
 import { Lamps } from "./Lamps";
 import { MovingObject } from "./MovingObject";
@@ -18,13 +17,13 @@ import { Pavement } from "./Pavement";
 export class Buildings extends MovingObject implements SceneSubject {
   name = "Buildings";
 
-  private static DISTANCE = 396; // 33 long
+  private static DISTANCE = 400; // 25 long
   private static MAX_WIDTH_SQUARES = 3;
-  private static SQUARE_SIZE = 10;
-  private static FULL_SQUARE_SIZE = 12;
+  private static SQUARE_SIZE = 12;
+  private static FULL_SQUARE_SIZE = 16;
 
   private static ROTATE_O = true;
-  private static ROTATE_AFFECTED_ROWS = 20;
+  private static ROTATE_AFFECTED_ROWS = 15;
   private static ROTATE_MIN = Math.PI / 3;
 
   private readonly instanceCount: number;
@@ -34,6 +33,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private leftInstance: InstancedMesh;
   private rightInstance: InstancedMesh;
 
+  // Used to track which z-row in the instances is closest to z=0
   private lastZOffset: number;
 
   constructor() {
@@ -43,28 +43,16 @@ export class Buildings extends MovingObject implements SceneSubject {
     this.instanceCount = this.length * this.width;
 
     this.lastZOffset = 0;
+    // Copied from Lamps
     this.offsetMultiplier =
       (Pavement.SQUARE_SIZE / Lamps.GAP_DISTANCE) * Pavement.OFFSET_MULTIPLIER;
     addFrameListener(this.handleFrame);
   }
 
   async load() {
-    const baseSize = Buildings.SQUARE_SIZE;
-    const minHeight = Buildings.SQUARE_SIZE * 2;
-    const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
-    const material = new MeshPhongMaterial({ color: 0x000000 });
-
-    this.leftInstance = new InstancedMesh(
-      boxGeometry,
-      material,
-      this.instanceCount
-    );
+    this.leftInstance = this.buildingMesh();
     this.leftInstance.position.x = -Pavement.SQUARE_SIZE * 3;
-    this.rightInstance = new InstancedMesh(
-      boxGeometry.clone(),
-      material.clone(),
-      this.instanceCount
-    );
+    this.rightInstance = this.buildingMesh();
     this.rightInstance.position.x = Pavement.SQUARE_SIZE * 3;
 
     for (let length = 0; length < this.length; length++) {
@@ -72,46 +60,52 @@ export class Buildings extends MovingObject implements SceneSubject {
     }
   }
 
+  private buildingMesh(): InstancedMesh {
+    const baseSize = Buildings.SQUARE_SIZE;
+    const minHeight = Buildings.SQUARE_SIZE * 2;
+    const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
+    const material = new MeshPhongMaterial({ color: 0x000000 });
+    return new InstancedMesh(boxGeometry, material, this.instanceCount);
+  }
+
   private computeRow(zRow: number, iterations: number) {
+    // Discardable matrix instance
     const matrix = new Matrix4();
 
     for (let width = 0; width < this.width; width++) {
       let offset = Buildings.FULL_SQUARE_SIZE / 2;
+      // Use full square size offset on the last row to hide skybox
       offset *= width + 1 === this.width ? 2 : 1;
+      // Apply a z-offset based on how many times this row has been generated
       const zIterOffset = iterations * Buildings.DISTANCE;
-      const z = offset + Buildings.FULL_SQUARE_SIZE * zRow + zIterOffset;
       const x = offset + Buildings.FULL_SQUARE_SIZE * width;
+      // Make buildings closer to the road appear shorter
+      const y = -2 * (this.width - width);
+      const z = offset + Buildings.FULL_SQUARE_SIZE * zRow + zIterOffset;
+      // Apply random vertical scaling
       const scaleY = 1 + Math.random() * 4;
+      // Index of the matrix in the instance mesh
       const idx = zRow * this.width + width;
 
       this.leftInstance.setMatrixAt(
         idx,
-        this.positionMatrix(matrix, -x, -z, scaleY)
+        this.positionMatrix(matrix, new Vector3(-x, y, -z), scaleY)
       );
       this.rightInstance.setMatrixAt(
         idx,
-        this.positionMatrix(matrix, x, -z, scaleY)
+        this.positionMatrix(matrix, new Vector3(x, y, -z), scaleY)
       );
     }
+
+    // Necessary to recompute entire instance
     this.leftInstance.instanceMatrix.needsUpdate = true;
     this.rightInstance.instanceMatrix.needsUpdate = true;
   }
 
-  private positionMatrix(
-    matrix: Matrix4,
-    x: number,
-    z: number,
-    scaleY: number
-  ) {
-    const position = new Vector3();
+  private positionMatrix(matrix: Matrix4, position: Vector3, scaleY: number) {
     const quaternion = new Quaternion();
     const scale = new Vector3(1, 1, 1);
-
-    position.x = x;
-    position.z = z;
-
     scale.y = scaleY;
-
     return matrix.compose(position, quaternion, scale);
   }
 

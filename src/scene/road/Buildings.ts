@@ -1,10 +1,15 @@
 import {
   BoxBufferGeometry,
+  DynamicDrawUsage,
   InstancedMesh,
+  LoadingManager,
   Matrix4,
   MeshPhongMaterial,
   Object3D,
   Quaternion,
+  RepeatWrapping,
+  Texture,
+  TextureLoader,
   Vector3,
 } from "three";
 
@@ -21,6 +26,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private static MAX_WIDTH_SQUARES = 3;
   private static SQUARE_SIZE = 12;
   private static FULL_SQUARE_SIZE = 16;
+  private static VERTICAL_SCALE = 8;
 
   private static ROTATE_O = true;
   private static ROTATE_AFFECTED_ROWS = 15;
@@ -30,6 +36,8 @@ export class Buildings extends MovingObject implements SceneSubject {
   private readonly length: number;
   private readonly width: number;
 
+  // Eventually, it will be necessary to pass all materials in an InstancedBufferAttribute
+  // and randomly select from that array to simulate better random buildings
   private leftInstance: InstancedMesh;
   private rightInstance: InstancedMesh;
 
@@ -49,10 +57,16 @@ export class Buildings extends MovingObject implements SceneSubject {
     addFrameListener(this.handleFrame);
   }
 
-  async load() {
-    this.leftInstance = this.buildingMesh();
+  async load(loadingManager: LoadingManager) {
+    const texture = await new TextureLoader(loadingManager).loadAsync(
+      "textures/skyscraper/basic.jpg"
+    );
+    texture.wrapS = RepeatWrapping;
+    texture.anisotropy = 16;
+
+    this.leftInstance = this.buildingMesh(texture);
     this.leftInstance.position.x = -Pavement.SQUARE_SIZE * 3;
-    this.rightInstance = this.buildingMesh();
+    this.rightInstance = this.buildingMesh(texture);
     this.rightInstance.position.x = Pavement.SQUARE_SIZE * 3;
 
     for (let length = 0; length < this.length; length++) {
@@ -60,11 +74,13 @@ export class Buildings extends MovingObject implements SceneSubject {
     }
   }
 
-  private buildingMesh(): InstancedMesh {
+  private buildingMesh(texture: Texture): InstancedMesh {
     const baseSize = Buildings.SQUARE_SIZE;
-    const minHeight = Buildings.SQUARE_SIZE * 2;
+    const minHeight = Buildings.SQUARE_SIZE * Buildings.VERTICAL_SCALE;
     const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
-    const material = new MeshPhongMaterial({ color: 0x000000 });
+    const material = new MeshPhongMaterial({ map: texture, shininess: 0 });
+    const mesh = new InstancedMesh(boxGeometry, material, this.instanceCount);
+    mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     return new InstancedMesh(boxGeometry, material, this.instanceCount);
   }
 
@@ -80,33 +96,26 @@ export class Buildings extends MovingObject implements SceneSubject {
       const zIterOffset = iterations * Buildings.DISTANCE;
       const x = offset + Buildings.FULL_SQUARE_SIZE * width;
       // Make buildings closer to the road appear shorter
-      const y = -2 * (this.width - width);
+      let y = (Buildings.FULL_SQUARE_SIZE / -4) * (this.width - width);
+      // Apply random vertical manipulation
+      y -= Math.random() * 2 * Buildings.FULL_SQUARE_SIZE - offset;
       const z = offset + Buildings.FULL_SQUARE_SIZE * zRow + zIterOffset;
-      // Apply random vertical scaling
-      const scaleY = 1 + Math.random() * 4;
       // Index of the matrix in the instance mesh
       const idx = zRow * this.width + width;
 
       this.leftInstance.setMatrixAt(
         idx,
-        this.positionMatrix(matrix, new Vector3(-x, y, -z), scaleY)
+        matrix.setPosition(new Vector3(-x, y, -z))
       );
       this.rightInstance.setMatrixAt(
         idx,
-        this.positionMatrix(matrix, new Vector3(x, y, -z), scaleY)
+        matrix.setPosition(new Vector3(x, y, -z))
       );
     }
 
     // Necessary to recompute entire instance
     this.leftInstance.instanceMatrix.needsUpdate = true;
     this.rightInstance.instanceMatrix.needsUpdate = true;
-  }
-
-  private positionMatrix(matrix: Matrix4, position: Vector3, scaleY: number) {
-    const quaternion = new Quaternion();
-    const scale = new Vector3(1, 1, 1);
-    scale.y = scaleY;
-    return matrix.compose(position, quaternion, scale);
   }
 
   attach(parent: Object3D) {
@@ -157,8 +166,6 @@ export class Buildings extends MovingObject implements SceneSubject {
 
       this.applyRowRotation(zRow, theta);
     }
-
-    this.leftInstance.instanceMatrix.needsUpdate = true;
   }
 
   private applyRowRotation(zRow: number, theta: number) {

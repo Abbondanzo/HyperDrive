@@ -17,6 +17,8 @@ import CameraManager from "./CameraManager";
 import EventManager from "./EventManager";
 
 class SceneManager {
+  private static USE_COMPOSER = false;
+
   readonly scene: Scene;
 
   private readonly renderer: WebGLRenderer;
@@ -60,10 +62,13 @@ class SceneManager {
     this.composer.setSize(width, height);
   };
 
-  private update = ({}: FrameEvent) => {
+  private update = ({ delta }: FrameEvent) => {
     try {
-      this.renderer.render(this.scene, CameraManager.camera);
-      // this.composer.render(delta);
+      if (SceneManager.USE_COMPOSER) {
+        this.composer.render(delta);
+      } else {
+        this.renderer.render(this.scene, CameraManager.camera);
+      }
     } catch (error) {
       console.warn(error);
       removeFrameListener(this.update);

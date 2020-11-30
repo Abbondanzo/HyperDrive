@@ -1,4 +1,7 @@
-import { Scene, WebGLRenderer } from "three";
+import { Scene, Vector2, WebGLRenderer } from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 
 import {
   addFrameListener,
@@ -15,12 +18,28 @@ import EventManager from "./EventManager";
 
 class SceneManager {
   readonly scene: Scene;
+
   private readonly renderer: WebGLRenderer;
+  private readonly composer: EffectComposer;
 
   constructor() {
     this.scene = new Scene();
     this.scene.add(CameraManager.camera);
     this.renderer = new WebGLRenderer({ antialias: true });
+
+    // Configure bloom pass for future work
+    const renderScene = new RenderPass(this.scene, CameraManager.camera);
+    const bloomPass = new UnrealBloomPass(
+      new Vector2(window.innerWidth, window.innerHeight),
+      0.5,
+      0,
+      0
+    );
+
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(renderScene);
+    this.composer.addPass(bloomPass);
+
     addFrameListener(this.update);
     addWindowResizeListener(this.handleResize);
   }
@@ -38,11 +57,13 @@ class SceneManager {
 
   private readonly handleResize = ({ width, height }: WindowResizeEvent) => {
     this.renderer.setSize(width, height);
+    this.composer.setSize(width, height);
   };
 
   private update = ({}: FrameEvent) => {
     try {
       this.renderer.render(this.scene, CameraManager.camera);
+      // this.composer.render(delta);
     } catch (error) {
       console.warn(error);
       removeFrameListener(this.update);

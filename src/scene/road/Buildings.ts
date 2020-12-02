@@ -29,7 +29,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private static VERTICAL_SCALE = 8;
 
   private static ROTATE_O = true;
-  private static ROTATE_AFFECTED_ROWS = 10;
+  private static ROTATE_AFFECTED_ROWS = 15;
   private static ROTATE_MIN = Math.PI / 3;
 
   private readonly instanceCount: number;

@@ -4,7 +4,7 @@ import {
   InstancedMesh,
   LoadingManager,
   Matrix4,
-  MeshPhongMaterial,
+  MeshBasicMaterial,
   Object3D,
   Quaternion,
   RepeatWrapping,
@@ -22,14 +22,14 @@ import { Pavement } from "./Pavement";
 export class Buildings extends MovingObject implements SceneSubject {
   name = "Buildings";
 
-  private static DISTANCE = 400; // 25 long
+  private static Z_DISTANCE = 400; // 25 long
   private static MAX_WIDTH_SQUARES = 3;
   private static SQUARE_SIZE = 12;
   private static FULL_SQUARE_SIZE = 16;
   private static VERTICAL_SCALE = 8;
 
   private static ROTATE_O = true;
-  private static ROTATE_AFFECTED_ROWS = 15;
+  private static ROTATE_AFFECTED_ROWS = 10;
   private static ROTATE_MIN = Math.PI / 3;
 
   private readonly instanceCount: number;
@@ -46,7 +46,7 @@ export class Buildings extends MovingObject implements SceneSubject {
 
   constructor() {
     super();
-    this.length = Math.floor(Buildings.DISTANCE / Buildings.FULL_SQUARE_SIZE);
+    this.length = Math.floor(Buildings.Z_DISTANCE / Buildings.FULL_SQUARE_SIZE);
     this.width = Buildings.MAX_WIDTH_SQUARES;
     this.instanceCount = this.length * this.width;
 
@@ -58,14 +58,17 @@ export class Buildings extends MovingObject implements SceneSubject {
   }
 
   async load(loadingManager: LoadingManager) {
-    const texture = await new TextureLoader(loadingManager).loadAsync(
+    const texture: Texture = await new TextureLoader(loadingManager).loadAsync(
       "textures/skyscraper/basic.jpg"
     );
     texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
     texture.anisotropy = 16;
+    texture.repeat.set(1, 2);
 
     this.leftInstance = this.buildingMesh(texture);
     this.leftInstance.position.x = -Pavement.SQUARE_SIZE * 3;
+
     this.rightInstance = this.buildingMesh(texture);
     this.rightInstance.position.x = Pavement.SQUARE_SIZE * 3;
 
@@ -78,7 +81,7 @@ export class Buildings extends MovingObject implements SceneSubject {
     const baseSize = Buildings.SQUARE_SIZE;
     const minHeight = Buildings.SQUARE_SIZE * Buildings.VERTICAL_SCALE;
     const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
-    const material = new MeshPhongMaterial({ map: texture, shininess: 0 });
+    const material = new MeshBasicMaterial({ map: texture });
     const mesh = new InstancedMesh(boxGeometry, material, this.instanceCount);
     mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     return new InstancedMesh(boxGeometry, material, this.instanceCount);
@@ -93,7 +96,7 @@ export class Buildings extends MovingObject implements SceneSubject {
       // Use full square size offset on the last row to hide skybox
       offset *= width + 1 === this.width ? 2 : 1;
       // Apply a z-offset based on how many times this row has been generated
-      const zIterOffset = iterations * Buildings.DISTANCE;
+      const zIterOffset = iterations * Buildings.Z_DISTANCE;
       const x = offset + Buildings.FULL_SQUARE_SIZE * width;
       // Make buildings closer to the road appear shorter
       let y = (Buildings.FULL_SQUARE_SIZE / -4) * (this.width - width);
@@ -127,9 +130,10 @@ export class Buildings extends MovingObject implements SceneSubject {
     const newOffset = this.leftInstance.position.z + distance;
 
     while (newOffset > this.lastZOffset + Buildings.FULL_SQUARE_SIZE * 4) {
-      const iterations = 1 + Math.floor(this.lastZOffset / Buildings.DISTANCE);
+      const iterations =
+        1 + Math.floor(this.lastZOffset / Buildings.Z_DISTANCE);
       const zRow =
-        (this.lastZOffset % Buildings.DISTANCE) / Buildings.FULL_SQUARE_SIZE;
+        (this.lastZOffset % Buildings.Z_DISTANCE) / Buildings.FULL_SQUARE_SIZE;
       this.computeRow(zRow, iterations);
       this.lastZOffset += Buildings.FULL_SQUARE_SIZE;
     }
@@ -144,7 +148,7 @@ export class Buildings extends MovingObject implements SceneSubject {
 
   private computeRotateO() {
     const closestRow =
-      (this.lastZOffset % Buildings.DISTANCE) / Buildings.FULL_SQUARE_SIZE;
+      (this.lastZOffset % Buildings.Z_DISTANCE) / Buildings.FULL_SQUARE_SIZE;
     const offset =
       (this.lastZOffset +
         Buildings.FULL_SQUARE_SIZE * 4 -

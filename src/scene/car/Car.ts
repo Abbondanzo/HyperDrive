@@ -24,6 +24,8 @@ export class Car implements SceneSubject {
     this.chassis.position.z = -0.1;
     // TODO: Until we have a fully-developed model, hide this one
     this.chassis.visible = true;
+    this.chassis.castShadow = true;
+    this.chassis.receiveShadow = true;
     addToWindow("chassis", this.chassis);
   }
 

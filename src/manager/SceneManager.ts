@@ -1,6 +1,7 @@
 import { Scene, Vector2, WebGLRenderer } from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { SSAOPass } from "three/examples/jsm/postprocessing/SSAOPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 
 import {
@@ -17,7 +18,7 @@ import CameraManager from "./CameraManager";
 import EventManager from "./EventManager";
 
 class SceneManager {
-  private static USE_COMPOSER = false;
+  private static USE_COMPOSER = true;
 
   readonly scene: Scene;
 
@@ -30,20 +31,28 @@ class SceneManager {
     this.renderer = new WebGLRenderer({ antialias: true });
 
     // Configure bloom pass for future work
-    const renderScene = new RenderPass(this.scene, CameraManager.camera);
-    const bloomPass = new UnrealBloomPass(
-      new Vector2(window.innerWidth, window.innerHeight),
-      0.5,
-      0,
-      0
-    );
-
     this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(renderScene);
-    this.composer.addPass(bloomPass);
+    this.addComposerPasses();
 
     addFrameListener(this.update);
     addWindowResizeListener(this.handleResize);
+  }
+
+  private addComposerPasses() {
+    const renderScene = new RenderPass(this.scene, CameraManager.camera);
+    this.composer.addPass(renderScene);
+
+    // const bloomPass = new UnrealBloomPass(
+    //   new Vector2(window.innerWidth, window.innerHeight),
+    //   0.5,
+    //   0,
+    //   0
+    // );
+    // this.composer.addPass(bloomPass)
+
+    // const ssaoPass = new SSAOPass(this.scene, CameraManager.camera);
+    // ssaoPass.output = SSAOPass.OUTPUT.SSAO;
+    // this.composer.addPass(ssaoPass);
   }
 
   attach(element: HTMLElement) {

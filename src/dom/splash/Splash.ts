@@ -1,8 +1,12 @@
 import { LoadingManager } from "three";
 
+import { isDevelopment } from "../../utils/isDevelopment";
+
 type Callback = (loadingManager: LoadingManager, withSound: boolean) => void;
 
 export class Splash {
+  private static AUTO_START = true;
+
   readonly container: HTMLDivElement;
 
   private readonly onClickCallback: Callback;
@@ -12,9 +16,16 @@ export class Splash {
     this.loadingManager = new LoadingManager();
     this.container = document.createElement("div");
     this.container.id = "splash";
-    this.container.classList.add("hidden");
     this.onClickCallback = callback;
-    this.buildSplash();
+
+    // Perform auto starts to speed up development
+    if (isDevelopment() && Splash.AUTO_START) {
+      this.showLoadingManager();
+      this.onClickCallback(this.loadingManager, false);
+    } else {
+      this.container.classList.add("hidden");
+      this.buildSplash();
+    }
   }
 
   private buildSplash() {

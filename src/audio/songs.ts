@@ -52,9 +52,21 @@ const HOME_RESONANCE: Song = {
   video: "https://youtube.com/watch?v=8GW6sLrK40k",
 };
 
+// https://tunebat.com/Info/Over-Easy-Stst/5TrTRbz0W5deKf9EZJ4DRp
+const OVER_EASY: Song = {
+  name: "Over Easy",
+  artist: "Stst",
+  bpm: 122,
+  durationS: 163,
+  filename: "stst_over_easy.mp3",
+  camelot: "9B",
+  video: "https://www.youtube.com/watch?v=Z6mxU1cMsCo",
+};
+
 export const songs = [
   HOME_RESONANCE,
   DAN_MASON_NOW_OR_NEVER,
   HOME_HEAD_FIRST,
   DANGER_2239,
+  OVER_EASY,
 ];

@@ -22,7 +22,7 @@ import { Pavement } from "./Pavement";
 export class Buildings extends MovingObject implements SceneSubject {
   name = "Buildings";
 
-  private static Z_DISTANCE = 400; // 25 long
+  private static Z_DISTANCE = 480; // 30 long
   private static MAX_WIDTH_SQUARES = 3;
   private static SQUARE_SIZE = 12;
   private static FULL_SQUARE_SIZE = 16;
@@ -101,7 +101,7 @@ export class Buildings extends MovingObject implements SceneSubject {
       // Make buildings closer to the road appear shorter
       let y = (Buildings.FULL_SQUARE_SIZE / -4) * (this.width - width);
       // Apply random vertical manipulation
-      y -= Math.random() * 2 * Buildings.FULL_SQUARE_SIZE - offset;
+      y -= Math.random() * 2.5 * Buildings.FULL_SQUARE_SIZE - offset;
       const z = offset + Buildings.FULL_SQUARE_SIZE * zRow + zIterOffset;
       // Index of the matrix in the instance mesh
       const idx = zRow * this.width + width;
@@ -168,11 +168,16 @@ export class Buildings extends MovingObject implements SceneSubject {
         theta = pctOffset * Buildings.ROTATE_MIN;
       }
 
-      this.applyRowRotation(zRow, theta);
+      this.applyRowRotation(this.leftInstance, zRow, theta);
+      this.applyRowRotation(this.rightInstance, zRow, -theta);
     }
   }
 
-  private applyRowRotation(zRow: number, theta: number) {
+  private applyRowRotation(
+    instancedMesh: InstancedMesh,
+    zRow: number,
+    theta: number
+  ) {
     const position = new Vector3();
     const quaternion = new Quaternion();
     const scale = new Vector3();
@@ -181,21 +186,18 @@ export class Buildings extends MovingObject implements SceneSubject {
       const mIdx = zRow * this.width + width;
 
       let matrix = new Matrix4();
-      this.leftInstance.getMatrixAt(mIdx, matrix);
+      instancedMesh.getMatrixAt(mIdx, matrix);
       matrix.decompose(position, quaternion, scale);
+      const yOffset = position.y;
+      position.y = 0;
       quaternion.setFromAxisAngle(new Vector3(0, 0, 1), theta);
       matrix = matrix.compose(position, quaternion, scale);
-      this.leftInstance.setMatrixAt(mIdx, matrix);
-
-      matrix = new Matrix4();
-      this.rightInstance.getMatrixAt(mIdx, matrix);
-      matrix.decompose(position, quaternion, scale);
-      quaternion.setFromAxisAngle(new Vector3(0, 0, 1), -theta);
-      matrix = matrix.compose(position, quaternion, scale);
-      this.rightInstance.setMatrixAt(mIdx, matrix);
+      matrix = matrix.setPosition(position.x, yOffset, position.z);
+      instancedMesh.setMatrixAt(mIdx, matrix);
     }
 
-    this.leftInstance.instanceMatrix.needsUpdate = true;
-    this.rightInstance.instanceMatrix.needsUpdate = true;
+    instancedMesh.instanceMatrix.needsUpdate = true;
   }
+
+  private;
 }

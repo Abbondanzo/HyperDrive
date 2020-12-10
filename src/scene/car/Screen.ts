@@ -1,11 +1,8 @@
-import { LoadingManager, Mesh, Object3D, Quaternion, Vector3 } from "three";
+import { Mesh, Object3D, Vector3 } from "three";
 import { CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer";
-import { dispatchScreenAttachEvent } from "../../events/screenAttach";
-import { addSongMetadataListener } from "../../events/songMetadata";
-import CameraManager from "../../manager/CameraManager";
 
 import { SceneSubject } from "./../SceneSubject";
-import { SongMetadataEvent } from "./../../events/songMetadata";
+import { ScreenDOM } from "./ScreenDOM";
 
 export class Screen implements SceneSubject {
   name = "Screen";
@@ -14,33 +11,21 @@ export class Screen implements SceneSubject {
   private static CSS_DISTANCE = 500;
 
   private object: Object3D;
-  private readonly div: HTMLDivElement;
-  private readonly metadata: HTMLDivElement;
+  private readonly screenDOM: ScreenDOM;
 
   constructor() {
-    this.div = document.createElement("div");
-    this.div.id = "screen";
-    this.metadata = document.createElement("div");
-    this.metadata.id = "song-metadata";
-    this.div.appendChild(this.metadata);
-    this.setSongInfo("No Artist", "No Song Name");
-    // Subscribers
-    dispatchScreenAttachEvent({ screen: this.div });
-    addSongMetadataListener(this.handleSongMetadata);
+    this.screenDOM = new ScreenDOM();
   }
 
-  async load(loadingManager: LoadingManager) {
+  async load() {
     this.object = new Object3D();
-    const css3dObject = new CSS3DObject(this.div);
+    const css3dObject = new CSS3DObject(this.screenDOM.div);
     this.object.add(css3dObject);
   }
 
   attach(parent: Object3D) {
     this.copyWorldPosition(parent as Mesh, this.object);
-    // this.object.position.z = -200;
-    // this.object.rotateX(-0.3);
     this.object.updateWorldMatrix(false, true);
-    // this.object.matrixWorldNeedsUpdate = true;
     parent.add(this.object);
   }
 
@@ -63,8 +48,10 @@ export class Screen implements SceneSubject {
     const { max, min } = source.geometry.boundingBox;
     const deltaX = Math.abs(max.x - min.x);
     const deltaY = Math.abs(max.y - min.y);
-    this.div.style.width = `${deltaX * 2 * Screen.CSS_DISTANCE}px`;
-    this.div.style.height = `${deltaY * 2.35 * Screen.CSS_DISTANCE}px`;
+    this.screenDOM.div.style.width = `${deltaX * 2 * Screen.CSS_DISTANCE}px`;
+    this.screenDOM.div.style.height = `${
+      deltaY * 2.35 * Screen.CSS_DISTANCE
+    }px`;
   }
 
   // Get X rotation in radians
@@ -75,23 +62,4 @@ export class Screen implements SceneSubject {
     const deltaY = Math.abs(max.y - min.y);
     return -Math.atan(deltaX / deltaY);
   }
-
-  private setSongInfo(artist: string, name: string) {
-    // Reset metadata
-    this.metadata.innerHTML = "";
-    // Assign artist
-    const artistDiv = document.createElement("span");
-    artistDiv.id = "song-artist";
-    artistDiv.innerHTML = artist;
-    this.metadata.appendChild(artistDiv);
-    // Assign name
-    const nameDiv = document.createElement("span");
-    nameDiv.id = "song-name";
-    nameDiv.innerHTML = name;
-    this.metadata.appendChild(nameDiv);
-  }
-
-  private readonly handleSongMetadata = ({ song }: SongMetadataEvent) => {
-    this.setSongInfo(song.artist, song.name);
-  };
 }

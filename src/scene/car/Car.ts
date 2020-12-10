@@ -21,7 +21,7 @@ export class Car implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     this.chassis = await loadGLTF(loadingManager, "models/chassis.gltf");
-    await this.screen.load(loadingManager);
+    await this.screen.load();
     // this.screen = this.getScreen(this.chassis);
     // Fine tuning the chassis around origin
     this.chassis.position.x = 0.345;

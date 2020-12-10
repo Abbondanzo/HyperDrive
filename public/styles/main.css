@@ -173,6 +173,24 @@ Screen
   padding: 4px;
 }
 
+#screen .divider {
+  color: #fff;
+  width: 80%;
+  opacity: 0.5;
+}
+
+#speedometer > span:first-child {
+  width: 100%;
+  display: block;
+  opacity: 0.5;
+  font-size: 16px;
+}
+
+#speedometer #speed {
+  width: 100%;
+  font-size: 28px;
+}
+
 #song-metadata {
   overflow: hidden;
 }
@@ -181,6 +199,7 @@ Screen
   font-size: 16px;
   width: 100%;
   display: block;
+  opacity: 0.5;
 }
 
 #song-name {
@@ -188,6 +207,28 @@ Screen
   white-space: nowrap;
   display: inline-block;
   transition: transform 4s;
+}
+
+#song-controls {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#song-controls button {
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+#song-playpause {
+  color: #fff;
+  background: rgba(255, 0, 252, 1) !important;
+  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%) !important;
+  border: none;
+  border-radius: 1000px;
+  width: 40px;
+  height: 40px;
 }
 
 /* 

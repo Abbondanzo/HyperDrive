@@ -17,6 +17,8 @@ import {
 import { SongPlayPauseEvent } from "./../../events/songPlayPause";
 
 export class ScreenDOM {
+  private static NAME_SCROLL_OFFSET_MS = 8000;
+
   readonly div: HTMLDivElement;
 
   private readonly lockPointer: HTMLDivElement;
@@ -28,6 +30,7 @@ export class ScreenDOM {
 
   private playing: boolean;
   private intersectObject: Object3D | null;
+  private songNameOffset: number | null;
 
   constructor() {
     this.div = document.createElement("div");
@@ -92,7 +95,33 @@ export class ScreenDOM {
     nameDiv.id = "song-name"; // CSS affected
     nameDiv.innerHTML = name;
     this.metadata.appendChild(nameDiv);
+    this.checkSongNameOffset(nameDiv);
   }
+
+  private checkSongNameOffset(element: HTMLElement) {
+    clearTimeout(this.songNameOffset);
+    this.showNameDiff(element);
+  }
+
+  private readonly showNameDiff = (element: HTMLElement) => {
+    const diff = element.offsetWidth - element.parentElement.offsetWidth;
+    if (diff <= 0) {
+      return;
+    }
+    element.style.transform = `translateX(-${diff}px)`;
+    this.songNameOffset = window.setTimeout(
+      () => this.hideNameDiff(element),
+      ScreenDOM.NAME_SCROLL_OFFSET_MS
+    );
+  };
+
+  private readonly hideNameDiff = (element: HTMLElement) => {
+    element.style.transform = `translateX(0px)`;
+    this.songNameOffset = window.setTimeout(
+      () => this.showNameDiff(element),
+      ScreenDOM.NAME_SCROLL_OFFSET_MS
+    );
+  };
 
   private readonly handleSongMetadata = ({ song }: SongMetadataEvent) => {
     this.setSongInfo(song.artist, song.name);

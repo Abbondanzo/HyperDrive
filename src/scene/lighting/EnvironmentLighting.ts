@@ -10,7 +10,7 @@ export class EnvironmentLighting implements SceneSubject {
   private hemisphereLight: HemisphereLight;
 
   async load() {
-    this.ambientLight = new AmbientLight(0xffffff, 0.2);
+    this.ambientLight = new AmbientLight(0xffffff, 0.1);
     this.pointLight = new PointLight(0xffffff, 0.1);
     this.pointLight.position.set(1, 2, 3);
     this.hemisphereLight = new HemisphereLight(0xfccd05, 0xff00fc, 0.1);
@@ -19,7 +19,7 @@ export class EnvironmentLighting implements SceneSubject {
 
   attach(parent: Object3D) {
     parent.add(this.ambientLight);
-    // parent.add(this.hemisphereLight);
-    parent.add(this.pointLight);
+    parent.add(this.hemisphereLight);
+    // parent.add(this.pointLight);
   }
 }

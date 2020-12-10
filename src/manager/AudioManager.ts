@@ -107,7 +107,6 @@ class AudioManager {
   private startCurrentSong() {
     const song = this.songs[this.currentSong];
     this.setNewBPM(song.bpm);
-    console.log(song.bpm);
     song.audio.play();
     dispatchSongPlayPauseEvent({ play: true });
     dispatchSongMetadataEvent({ song: song });

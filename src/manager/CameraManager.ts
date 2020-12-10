@@ -1,6 +1,6 @@
 import { PerspectiveCamera, Quaternion } from "three";
-import { addFrameListener } from "../events/frame";
 
+import { addFrameListener } from "../events/frame";
 import {
   addWindowResizeListener,
   WindowResizeEvent,

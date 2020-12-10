@@ -1,4 +1,4 @@
-import { Camera, Scene, Vector2, WebGLRenderer } from "three";
+import { Scene, Vector2, WebGLRenderer } from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { SSAOPass } from "three/examples/jsm/postprocessing/SSAOPass";
@@ -79,11 +79,10 @@ class SceneManager {
 
   private update = ({ delta }: FrameEvent) => {
     try {
+      this.cssRenderer.render(this.scene, CameraManager.cssCamera);
       if (SceneManager.USE_COMPOSER) {
-        this.cssRenderer.render(this.scene, CameraManager.cssCamera);
         this.composer.render(delta);
       } else {
-        this.cssRenderer.render(this.scene, CameraManager.cssCamera);
         this.renderer.render(this.scene, CameraManager.camera);
       }
     } catch (error) {

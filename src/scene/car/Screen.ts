@@ -57,7 +57,7 @@ export class Screen implements SceneSubject {
     const deltaX = Math.abs(max.x - min.x);
     const deltaY = Math.abs(max.y - min.y);
     this.div.style.width = `${deltaX * 2 * Screen.CSS_DISTANCE}px`;
-    this.div.style.height = `${deltaY * 2.25 * Screen.CSS_DISTANCE}px`;
+    this.div.style.height = `${deltaY * 2.3 * Screen.CSS_DISTANCE}px`;
   }
 
   // Get X rotation in radians

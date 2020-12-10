@@ -19,7 +19,7 @@ export class Road implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     // Offset from car
-    this.group.position.x = 0.275 * 2; // 2x the Car x offset
+    this.group.position.x = 0.345 * 2; // 2x the Car x offset
     this.group.position.y = -1.5;
 
     await Promise.all(

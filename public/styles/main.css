@@ -139,12 +139,39 @@ Scene loaded
   opacity: 1;
 }
 
+/* 
+====================
+Screen
+====================
+*/
+
 #css-renderer {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+#screen {
+  color: #fff;
+}
+
+#screen > div {
+  padding: 4px;
+}
+
+#song-metadata span {
+  width: 100%;
+  display: block;
+}
+
+#song-artist {
+  font-size: 16px;
+}
+
+#song-name {
+  font-size: 24px;
 }
 
 /* 

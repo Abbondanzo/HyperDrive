@@ -1,6 +1,8 @@
 import { Audio } from "three";
 
 import { Song } from "../audio/songs";
+import { addScreenAttachListener } from "../events/screenAttach";
+import { dispatchSongMetadataEvent } from "../events/songMetadata";
 import { addSongMuteListener, SongMuteEvent } from "../events/songMute";
 import {
   addSongPlayPauseListener,
@@ -28,6 +30,7 @@ class AudioManager {
     dispatchSongSpeedEvent({ bpm: this.currentBPM });
     addSongPlayPauseListener(this.handlePlayPause);
     addSongMuteListener(this.handleMute);
+    addScreenAttachListener(this.handleScreenAttach);
   }
 
   attach(songs: SongAudio[]) {
@@ -47,6 +50,7 @@ class AudioManager {
       const nextIndex = this.getNextSongIndex();
       this.currentSong = nextIndex;
       this.setNewBPM(this.songs[nextIndex].bpm);
+      dispatchSongMetadataEvent({ song: this.songs[this.currentSong] });
     }
   }
 
@@ -56,7 +60,14 @@ class AudioManager {
     }
     if (this.currentSong !== null) {
       if (!this.isCurrentSongPlaying()) {
-        this.getCurrentAudio()?.play();
+        const audio = this.getCurrentAudio();
+        if (audio) {
+          audio.play();
+          audio.source.onended = () => {
+            audio.isPlaying = false;
+            this.playNextRandomSong();
+          };
+        }
       }
     } else {
       this.currentSong = Math.floor(Math.random() * this.songs.length);
@@ -82,6 +93,7 @@ class AudioManager {
     console.log(randomSong);
     this.setNewBPM(randomSong.bpm);
     randomSong.audio.play();
+    dispatchSongMetadataEvent({ song: randomSong });
     // Overrides the internal call to three. Need to set isPlaying manually
     randomSong.audio.source.onended = () => {
       randomSong.audio.isPlaying = false;
@@ -142,6 +154,14 @@ class AudioManager {
     } else {
       currentAudio.setVolume(1);
     }
+  };
+
+  private readonly handleScreenAttach = () => {
+    if (this.songs.length === 0 || this.currentSong === null) {
+      return;
+    }
+    const song = this.songs[this.currentSong];
+    dispatchSongMetadataEvent({ song });
   };
 }
 

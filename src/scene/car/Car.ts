@@ -10,21 +10,21 @@ export class Car implements SceneSubject {
 
   private static GROUP_NAME = "CAR_CAMERA_GROUP";
 
-  private camera: Camera;
+  private readonly camera: Camera;
   private chassis: Group;
-  private screen: Screen;
+  private readonly screen: Screen;
 
   constructor(camera: Camera) {
     this.camera = camera;
+    this.screen = new Screen();
   }
 
   async load(loadingManager: LoadingManager) {
     this.chassis = await loadGLTF(loadingManager, "models/chassis.gltf");
-    this.screen = new Screen(0.3, 0.3);
     await this.screen.load(loadingManager);
     // this.screen = this.getScreen(this.chassis);
     // Fine tuning the chassis around origin
-    this.chassis.position.x = 0.275;
+    this.chassis.position.x = 0.345;
     this.chassis.position.y = -0.7;
     this.chassis.position.z = -0.1;
     this.chassis.castShadow = true;

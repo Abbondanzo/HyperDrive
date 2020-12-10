@@ -167,6 +167,7 @@ Screen
 
 #screen {
   color: #fff;
+  user-select: none;
 }
 
 #screen > div {

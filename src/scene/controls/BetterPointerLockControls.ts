@@ -1,5 +1,8 @@
 import { Camera, Euler, EventDispatcher, Vector3 } from "three";
 
+import { dispatchLockedMousedownEvent } from "../../events/lockedMousedown";
+import { dispatchLockedMousemoveEvent } from "../../events/lockedMousemove";
+
 /**
  * A version of PointerLockControls that supports horizontal locking and sensitivity controls.
  * https://threejs.org/docs/#examples/en/controls/PointerLockControls
@@ -43,8 +46,22 @@ export class BetterPointerLockControls extends EventDispatcher {
     this.connect();
   }
 
+  private readonly onMouseDown = (event: any) => {
+    if (this.isLocked === false) return;
+
+    const centerX = event.target?.offsetWidth / 2 || 0;
+    const centerY = event.target?.offsetHeight / 2 || 0;
+    const x = centerX || event.clientX || -1;
+    const y = centerY || event.clientY || -1;
+    dispatchLockedMousedownEvent({ x, y });
+  };
+
   private readonly onMouseMove = (event: any) => {
     if (this.isLocked === false) return;
+
+    const centerX = event.target?.offsetWidth / 2 || 0;
+    const centerY = event.target?.offsetHeight / 2 || 0;
+    dispatchLockedMousemoveEvent({ x: centerX, y: centerY });
 
     const movementX =
       event.movementX || event.mozMovementX || event.webkitMovementX || 0;
@@ -96,6 +113,11 @@ export class BetterPointerLockControls extends EventDispatcher {
 
   connect() {
     this.domElement.ownerDocument.addEventListener(
+      "mousedown",
+      this.onMouseDown,
+      false
+    );
+    this.domElement.ownerDocument.addEventListener(
       "mousemove",
       this.onMouseMove,
       false
@@ -113,6 +135,11 @@ export class BetterPointerLockControls extends EventDispatcher {
   }
 
   disconnect() {
+    this.domElement.ownerDocument.removeEventListener(
+      "mousedown",
+      this.onMouseDown,
+      false
+    );
     this.domElement.ownerDocument.removeEventListener(
       "mousemove",
       this.onMouseMove,

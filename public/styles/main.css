@@ -67,11 +67,7 @@ Pre-scene
   font-weight: 700;
   color: #fff;
   background: rgba(255, 0, 252, 1);
-  background: linear-gradient(
-    90deg,
-    rgba(252, 205, 5, 1) 0%,
-    rgba(255, 0, 252, 1) 100%
-  );
+  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%);
   border: none;
   border-radius: 1000px;
   box-shadow: 12px 12px 24px rgba(255, 0, 252, 0.25);
@@ -141,6 +137,99 @@ Scene loaded
 #controls button:hover,
 #controls button:active {
   opacity: 1;
+}
+
+/* 
+====================
+Screen
+====================
+*/
+
+#lockpointer {
+  height: 5px;
+  width: 5px;
+  background-color: #bbb;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#css-renderer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#screen {
+  color: #fff;
+  user-select: none;
+}
+
+#screen > div {
+  padding: 4px;
+}
+
+#screen .divider {
+  color: #fff;
+  width: 80%;
+  opacity: 0.5;
+}
+
+#speedometer > span:first-child {
+  width: 100%;
+  display: block;
+  opacity: 0.5;
+  font-size: 16px;
+}
+
+#speedometer #speed {
+  width: 100%;
+  font-size: 28px;
+}
+
+#song-metadata {
+  overflow: hidden;
+}
+
+#song-artist {
+  font-size: 16px;
+  width: 100%;
+  display: block;
+  opacity: 0.5;
+}
+
+#song-name {
+  font-size: 24px;
+  white-space: nowrap;
+  display: inline-block;
+  transition: transform 4s;
+}
+
+#song-controls {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#song-controls button {
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+#song-playpause {
+  color: #fff;
+  background: rgba(255, 0, 252, 1) !important;
+  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%) !important;
+  border: none;
+  border-radius: 1000px;
+  width: 40px;
+  height: 40px;
 }
 
 /* 

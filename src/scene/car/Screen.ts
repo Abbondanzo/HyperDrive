@@ -26,6 +26,7 @@ export class Screen implements SceneSubject {
   attach(parent: Object3D) {
     this.copyWorldPosition(parent as Mesh, this.object);
     this.object.updateWorldMatrix(false, true);
+    this.screenDOM.setIntersect(parent);
     parent.add(this.object);
   }
 

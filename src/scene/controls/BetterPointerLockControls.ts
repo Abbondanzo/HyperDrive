@@ -1,5 +1,7 @@
 import { Camera, Euler, EventDispatcher, Vector3 } from "three";
+
 import { dispatchLockedMousedownEvent } from "../../events/lockedMousedown";
+import { dispatchLockedMousemoveEvent } from "../../events/lockedMousemove";
 
 /**
  * A version of PointerLockControls that supports horizontal locking and sensitivity controls.
@@ -46,6 +48,7 @@ export class BetterPointerLockControls extends EventDispatcher {
 
   private readonly onMouseDown = (event: any) => {
     if (this.isLocked === false) return;
+
     const centerX = event.target?.offsetWidth / 2 || 0;
     const centerY = event.target?.offsetHeight / 2 || 0;
     const x = centerX || event.clientX || -1;
@@ -55,6 +58,10 @@ export class BetterPointerLockControls extends EventDispatcher {
 
   private readonly onMouseMove = (event: any) => {
     if (this.isLocked === false) return;
+
+    const centerX = event.target?.offsetWidth / 2 || 0;
+    const centerY = event.target?.offsetHeight / 2 || 0;
+    dispatchLockedMousemoveEvent({ x: centerX, y: centerY });
 
     const movementX =
       event.movementX || event.mozMovementX || event.webkitMovementX || 0;

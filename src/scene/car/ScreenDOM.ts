@@ -1,18 +1,25 @@
+import { Object3D } from "three";
+
 import { addLockedMousedownListener } from "../../events/lockedMousedown";
+import { addLockedMousemoveListener } from "../../events/lockedMousemove";
 import { dispatchScreenAttachEvent } from "../../events/screenAttach";
 import {
   addSongPlayPauseListener,
   dispatchSongPlayPauseEvent,
 } from "../../events/songPlayPause";
+import { dispatchSongSkipEvent } from "../../events/songSkip";
+import CameraManager from "../../manager/CameraManager";
+import { LockedMousedownEvent } from "./../../events/lockedMousedown";
 import {
   addSongMetadataListener,
   SongMetadataEvent,
 } from "./../../events/songMetadata";
 import { SongPlayPauseEvent } from "./../../events/songPlayPause";
-import { LockedMousedownEvent } from "./../../events/lockedMousedown";
 
 export class ScreenDOM {
   readonly div: HTMLDivElement;
+
+  private readonly lockPointer: HTMLDivElement;
   private readonly metadata: HTMLDivElement;
   // Controls
   private readonly back: HTMLButtonElement;
@@ -20,10 +27,17 @@ export class ScreenDOM {
   private readonly forward: HTMLButtonElement;
 
   private playing: boolean;
+  private intersectObject: Object3D | null;
 
   constructor() {
     this.div = document.createElement("div");
     this.div.id = "screen"; // CSS affected
+    //
+    this.intersectObject = null;
+    this.lockPointer = document.createElement("div");
+    this.lockPointer.id = "lockpointer";
+    this.lockPointer.classList.add("hidden");
+    document.body.appendChild(this.lockPointer);
     //
     this.metadata = document.createElement("div");
     this.metadata.id = "song-metadata"; // CSS affected
@@ -38,9 +52,26 @@ export class ScreenDOM {
     // Subscribers
     dispatchScreenAttachEvent({ screen: this.div });
     addLockedMousedownListener(this.handleLockedMousedown);
+    addLockedMousemoveListener(this.checkScreenIntersect);
     addSongMetadataListener(this.handleSongMetadata);
     addSongPlayPauseListener(this.handleSongPlayPause);
   }
+
+  setIntersect(object: Object3D) {
+    this.intersectObject = object;
+  }
+
+  private readonly checkScreenIntersect = () => {
+    if (this.intersectObject === null) return;
+    const intersects = CameraManager.raycaster.intersectObject(
+      this.intersectObject
+    );
+    if (intersects.length > 0) {
+      this.lockPointer.classList.remove("hidden");
+    } else {
+      this.lockPointer.classList.add("hidden");
+    }
+  };
 
   /**
    * ========================
@@ -94,7 +125,7 @@ export class ScreenDOM {
   private readonly onSkipBackwardClick = (event?: Event) => {
     event?.stopPropagation();
     event?.preventDefault();
-    console.log("back");
+    dispatchSongSkipEvent({ direction: "backward" });
   };
 
   private readonly onPlayPauseClick = (event?: Event) => {
@@ -106,13 +137,17 @@ export class ScreenDOM {
   private readonly onSkipForwardClick = (event?: Event) => {
     event?.stopPropagation();
     event?.preventDefault();
-    console.log("forward");
+    dispatchSongSkipEvent({ direction: "forward" });
   };
 
   private readonly handleLockedMousedown = ({ x, y }: LockedMousedownEvent) => {
-    console.log(this.isInBounds(x, y, this.playPause));
-    console.log(this.isInBounds(x, y, this.back));
-    console.log(this.isInBounds(x, y, this.forward));
+    if (this.isInBounds(x, y, this.playPause)) {
+      this.onPlayPauseClick();
+    } else if (this.isInBounds(x, y, this.back)) {
+      this.onSkipBackwardClick();
+    } else if (this.isInBounds(x, y, this.forward)) {
+      this.onSkipForwardClick();
+    }
   };
 
   private isInBounds(x: number, y: number, element: HTMLElement): boolean {

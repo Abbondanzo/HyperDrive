@@ -9,7 +9,9 @@ import {
   dispatchSongPlayPauseEvent,
   SongPlayPauseEvent,
 } from "../events/songPlayPause";
+import { addSongSkipListener } from "../events/songSkip";
 import { dispatchSongSpeedEvent } from "../events/songSpeed";
+import { SongSkipEvent } from "./../events/songSkip";
 
 interface SongAudio extends Song {
   audio: Audio;
@@ -23,6 +25,8 @@ class AudioManager {
   private currentSong: number | null;
   private currentBPM: number;
 
+  private bpmTimeout: number | null;
+
   constructor() {
     this.songs = [];
     this.currentBPM = 0;
@@ -30,6 +34,7 @@ class AudioManager {
     dispatchSongSpeedEvent({ bpm: this.currentBPM });
     addSongPlayPauseListener(this.handlePlayPause);
     addSongMuteListener(this.handleMute);
+    addSongSkipListener(this.handleSkip);
     addScreenAttachListener(this.handleScreenAttach);
   }
 
@@ -43,7 +48,6 @@ class AudioManager {
     }
 
     if (playOnStart) {
-      dispatchSongPlayPauseEvent({ play: true });
       this.play();
     } else {
       dispatchSongPlayPauseEvent({ play: false });
@@ -60,18 +64,11 @@ class AudioManager {
     }
     if (this.currentSong !== null) {
       if (!this.isCurrentSongPlaying()) {
-        const audio = this.getCurrentAudio();
-        if (audio) {
-          audio.play();
-          audio.source.onended = () => {
-            audio.isPlaying = false;
-            this.playNextRandomSong();
-          };
-        }
+        this.startCurrentSong();
       }
     } else {
       this.currentSong = Math.floor(Math.random() * this.songs.length);
-      this.playNextRandomSong();
+      this.startCurrentSong();
     }
   }
 
@@ -81,25 +78,45 @@ class AudioManager {
     }
   }
 
-  private readonly playNextRandomSong = () => {
-    // Stop any song that is currently playing
+  private stop() {
     if (this.isCurrentSongPlaying()) {
       this.getCurrentAudio()?.stop();
     }
-    // Reset timeout if we change songs preemptively
+  }
+
+  private playPrevious() {
+    if (this.songs.length === 0) return;
+    this.stop();
+    let prevIndex = 0;
+    if (this.currentSong !== null) {
+      prevIndex =
+        (this.currentSong - 1 + this.songs.length) % this.songs.length;
+    }
+    this.currentSong = prevIndex;
+    this.startCurrentSong();
+  }
+
+  private playNext() {
+    if (this.songs.length === 0) return;
+    this.stop();
     const nextIndex = this.getNextSongIndex();
     this.currentSong = nextIndex;
-    const randomSong = this.songs[nextIndex];
-    console.log(randomSong);
-    this.setNewBPM(randomSong.bpm);
-    randomSong.audio.play();
-    dispatchSongMetadataEvent({ song: randomSong });
+    this.startCurrentSong();
+  }
+
+  private startCurrentSong() {
+    const song = this.songs[this.currentSong];
+    this.setNewBPM(song.bpm);
+    console.log(song.bpm);
+    song.audio.play();
+    dispatchSongPlayPauseEvent({ play: true });
+    dispatchSongMetadataEvent({ song: song });
     // Overrides the internal call to three. Need to set isPlaying manually
-    randomSong.audio.source.onended = () => {
-      randomSong.audio.isPlaying = false;
-      this.playNextRandomSong();
+    song.audio.source.onended = () => {
+      song.audio.isPlaying = false;
+      this.playNext();
     };
-  };
+  }
 
   private getNextSongIndex(): number {
     if (this.currentSong === null) {
@@ -126,7 +143,11 @@ class AudioManager {
       return;
     }
 
-    setTimeout(() => {
+    if (this.bpmTimeout !== null) {
+      clearTimeout(this.bpmTimeout);
+    }
+
+    this.bpmTimeout = window.setTimeout(() => {
       if (newBPM > this.currentBPM) {
         this.currentBPM += 1;
         dispatchSongSpeedEvent({ bpm: this.currentBPM });
@@ -153,6 +174,14 @@ class AudioManager {
       currentAudio?.setVolume(0);
     } else {
       currentAudio.setVolume(1);
+    }
+  };
+
+  private readonly handleSkip = ({ direction }: SongSkipEvent) => {
+    if (direction === "forward") {
+      this.playNext();
+    } else if (direction === "backward") {
+      this.playPrevious();
     }
   };
 

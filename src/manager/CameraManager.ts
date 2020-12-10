@@ -1,6 +1,6 @@
-import { PerspectiveCamera, Quaternion } from "three";
+import { PerspectiveCamera, Quaternion, Raycaster } from "three";
 
-import { addFrameListener } from "../events/frame";
+import { addLockedMousemoveListener } from "../events/lockedMousemove";
 import {
   addWindowResizeListener,
   WindowResizeEvent,
@@ -15,9 +15,9 @@ class CameraManager {
 
   readonly camera: PerspectiveCamera;
   readonly cssCamera: PerspectiveCamera;
+  readonly raycaster: Raycaster;
 
   private controls: BetterPointerLockControls;
-  private controlsLocked: boolean;
   private readonly quaternion: Quaternion;
 
   constructor() {
@@ -34,10 +34,10 @@ class CameraManager {
       CameraManager.FAR
     );
     this.cssCamera.position.z = CameraManager.CSS_DISTANCE;
-    this.controlsLocked = false;
     this.quaternion = new Quaternion();
+    this.raycaster = new Raycaster();
     addWindowResizeListener(this.updateSize);
-    addFrameListener(this.updateCSSCamera);
+    addLockedMousemoveListener(this.updateCSSCamera);
   }
 
   private readonly updateSize = ({ width, height }: WindowResizeEvent) => {
@@ -48,10 +48,9 @@ class CameraManager {
   };
 
   private readonly updateCSSCamera = () => {
-    if (this.controlsLocked) {
-      this.camera.getWorldQuaternion(this.quaternion);
-      this.cssCamera.setRotationFromQuaternion(this.quaternion);
-    }
+    this.camera.getWorldQuaternion(this.quaternion);
+    this.cssCamera.setRotationFromQuaternion(this.quaternion);
+    this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
   };
 
   initializeControls(element: HTMLElement) {
@@ -62,11 +61,9 @@ class CameraManager {
       }
     });
     this.controls.addEventListener("lock", () => {
-      this.controlsLocked = true;
       console.log("Controls Locked");
     });
     this.controls.addEventListener("unlock", () => {
-      this.controlsLocked = false;
       console.log("Controls Unlocked");
     });
   }

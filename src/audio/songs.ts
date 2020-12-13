@@ -53,7 +53,7 @@ const HOME_RESONANCE: Song = {
 };
 
 // https://tunebat.com/Info/Over-Easy-Stst/5TrTRbz0W5deKf9EZJ4DRp
-const OVER_EASY: Song = {
+const STST_OVER_EASY: Song = {
   name: "Over Easy",
   artist: "Stst",
   bpm: 122,
@@ -63,10 +63,46 @@ const OVER_EASY: Song = {
   video: "https://www.youtube.com/watch?v=Z6mxU1cMsCo",
 };
 
+// https://tunebat.com/Info/Dynamic-Voyage/1xDZYFJaDsDw4C4xatOyTM
+const VOYAGE_DYNAMIC: Song = {
+  name: "Dynamic",
+  artist: "Voyage",
+  bpm: 115,
+  durationS: 220,
+  filename: "voyage_dynamic.mp3",
+  camelot: "12A",
+  video: "https://www.youtube.com/watch?v=CTT9nY5S7YU",
+};
+
+// https://tunebat.com/Info/Ether-Limitless-Pauline-Herr/2OUhP9TtNIjciR7HRVTjTe
+const LIMITLESS_ETHER: Song = {
+  name: "Ether",
+  artist: "Limitless",
+  bpm: 95,
+  durationS: 229,
+  filename: "limitless_ether.mp3",
+  camelot: "8B",
+  video: "https://www.youtube.com/watch?v=LTXucOshZ_c",
+};
+
+// https://tunebat.com/Info/Eclipse-Hotel-Pools/2NO3nss5WoJFrL0i6xNMrH
+const HOTEL_POOLS_ECLIPSE: Song = {
+  name: "Eclipse",
+  artist: "Hotel Pools",
+  bpm: 170,
+  durationS: 221,
+  filename: "hotel_pools_eclipse.mp3",
+  camelot: "10A",
+  video: "https://www.youtube.com/watch?v=rYHNB_lPSNc",
+};
+
 export const songs = [
   HOME_RESONANCE,
   DAN_MASON_NOW_OR_NEVER,
   HOME_HEAD_FIRST,
   DANGER_2239,
-  OVER_EASY,
+  STST_OVER_EASY,
+  VOYAGE_DYNAMIC,
+  LIMITLESS_ETHER,
+  HOTEL_POOLS_ECLIPSE,
 ];

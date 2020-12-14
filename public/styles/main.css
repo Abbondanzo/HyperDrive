@@ -166,6 +166,7 @@ Screen
 }
 
 #screen {
+  opacity: 0.9;
   color: #fff;
   user-select: none;
 }

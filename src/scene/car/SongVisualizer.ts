@@ -6,8 +6,7 @@ import {
 } from "../../events/songFrequency";
 import { addToWindow } from "./../../utils/addToWindow";
 import { SceneSubject } from "./../SceneSubject";
-import fragmentShader from "./visualizer_frag.glsl";
-import vertexShader from "./visualizer_vert.glsl";
+import { VisualizerShader } from "../shaders/VisualizerShader";
 
 export class SongVisualizer implements SceneSubject {
   name = "SongVisualizer";
@@ -25,12 +24,11 @@ export class SongVisualizer implements SceneSubject {
   async load() {
     const geometry = new PlaneGeometry(0.15, 0.15, SongVisualizer.N_BANDS * 2);
     this.material = new ShaderMaterial({
+      ...VisualizerShader,
       defines: {
         FFT_SIZE: SongVisualizer.FFT_SIZE,
         N_BANDS: SongVisualizer.N_BANDS,
       },
-      vertexShader,
-      fragmentShader,
       uniforms: {
         frequencies: { value: new Float32Array(SongVisualizer.FFT_SIZE) },
       },
@@ -39,8 +37,6 @@ export class SongVisualizer implements SceneSubject {
 
     this.mesh = new Mesh(geometry, this.material);
     this.mesh.position.set(0, 0.375, -0.4);
-
-    addToWindow("mesh", this.mesh);
   }
 
   attach(parent: Object3D) {

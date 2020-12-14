@@ -32,7 +32,7 @@ export class Lighting implements SceneSubject {
   private readonly handleSongFrequency = ({
     averageFrequency,
   }: SongFrequencyEvent) => {
-    const increase = (0.2 * averageFrequency) / 255;
+    const increase = (0.1 * averageFrequency) / 255;
     this.ambientLight.intensity = 0.1 + increase;
     this.hemisphereLight.intensity = 0.1 + increase;
   };

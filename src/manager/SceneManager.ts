@@ -1,9 +1,10 @@
 import { Scene, Vector2, WebGLRenderer } from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
 import { SSAOPass } from "three/examples/jsm/postprocessing/SSAOPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
-import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass";
 import { CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer";
 
 import {
@@ -16,8 +17,10 @@ import {
   dispatchWindowResizeEvent,
   WindowResizeEvent,
 } from "../events/windowResize";
+import { BadTVShader } from "../scene/shaders/BadTVShader";
 import CameraManager from "./CameraManager";
 import EventManager from "./EventManager";
+import { Composer } from "../scene/postprocessing/Composer";
 
 class SceneManager {
   private static USE_COMPOSER = true;
@@ -26,7 +29,7 @@ class SceneManager {
 
   private readonly renderer: WebGLRenderer;
   private readonly cssRenderer: CSS3DRenderer;
-  private readonly composer: EffectComposer;
+  private readonly composer: Composer;
 
   constructor() {
     this.scene = new Scene();
@@ -34,32 +37,14 @@ class SceneManager {
     this.renderer = new WebGLRenderer({ antialias: true });
     this.cssRenderer = new CSS3DRenderer();
 
-    // Configure bloom pass for future work
-    this.composer = new EffectComposer(this.renderer);
-    this.addComposerPasses();
+    this.composer = new Composer(
+      this.scene,
+      CameraManager.camera,
+      this.renderer
+    );
 
     addFrameListener(this.update);
     addWindowResizeListener(this.handleResize);
-  }
-
-  private addComposerPasses() {
-    const renderScene = new RenderPass(this.scene, CameraManager.camera);
-    this.composer.addPass(renderScene);
-
-    const bloomPass = new UnrealBloomPass(
-      new Vector2(window.innerWidth, window.innerHeight),
-      0.5,
-      0,
-      0
-    );
-    // this.composer.addPass(bloomPass)
-
-    const ssaoPass = new SSAOPass(this.scene, CameraManager.camera);
-    ssaoPass.output = SSAOPass.OUTPUT.SSAO;
-    // this.composer.addPass(ssaoPass);
-
-    const filmPass = new FilmPass(0.35, 0.025, 648, 0);
-    // this.composer.addPass(filmPass);
   }
 
   attach(element: HTMLElement) {
@@ -78,15 +63,12 @@ class SceneManager {
   private readonly handleResize = ({ width, height }: WindowResizeEvent) => {
     this.renderer.setSize(width, height);
     this.cssRenderer.setSize(width, height);
-    this.composer.setSize(width, height);
   };
 
   private update = ({ delta }: FrameEvent) => {
     try {
       this.cssRenderer.render(this.scene, CameraManager.cssCamera);
-      if (SceneManager.USE_COMPOSER) {
-        this.composer.render(delta);
-      } else {
+      if (!SceneManager.USE_COMPOSER) {
         this.renderer.render(this.scene, CameraManager.camera);
       }
     } catch (error) {

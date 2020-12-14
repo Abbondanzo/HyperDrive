@@ -1,6 +1,7 @@
 import fragmentShader from "./badtv_frag.glsl";
 import vertexShader from "./badtv_vert.glsl";
 
+// Attribution: https://github.com/felixturner/bad-tv-shader
 export const BadTVShader = {
   uniforms: {
     tDiffuse: { type: "t", value: null },

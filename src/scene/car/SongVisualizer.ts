@@ -1,4 +1,13 @@
-import { Mesh, Object3D, PlaneGeometry, ShaderMaterial, Vector3 } from "three";
+import {
+  DataTexture,
+  FloatType,
+  Mesh,
+  Object3D,
+  PlaneGeometry,
+  RedFormat,
+  ShaderMaterial,
+  Vector3,
+} from "three";
 
 import {
   addSongFrequencyListener,
@@ -6,6 +15,7 @@ import {
 } from "../../events/songFrequency";
 import { N_BANDS } from "../../utils/constants";
 import { VisualizerShader } from "../shaders/VisualizerShader";
+import { FFT_SIZE } from "./../../utils/constants";
 import { SceneSubject } from "./../SceneSubject";
 
 export class SongVisualizer implements SceneSubject {
@@ -41,7 +51,15 @@ export class SongVisualizer implements SceneSubject {
     frequencyData,
   }: SongFrequencyEvent) => {
     if (this.material) {
-      this.material.uniforms.frequencies.value = frequencyData;
+      const dataTexture = this.toDataTexture(frequencyData);
+      this.material.uniforms.frequencies.value = dataTexture;
     }
   };
+
+  private toDataTexture(frequencyData: Uint8Array) {
+    const height = 1;
+    const width = FFT_SIZE / 2;
+    const floatArray = new Float32Array(frequencyData);
+    return new DataTexture(floatArray, width, height, RedFormat, FloatType);
+  }
 }

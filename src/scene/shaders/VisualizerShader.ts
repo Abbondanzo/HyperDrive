@@ -8,7 +8,7 @@ export const VisualizerShader = {
     N_BANDS,
   },
   uniforms: {
-    frequencies: { type: "f", value: new Int8Array(FFT_SIZE / 2) },
+    frequencies: { type: "t", value: new Float32Array(FFT_SIZE / 2) },
   },
   fragmentShader,
   vertexShader,

@@ -1,0 +1,45 @@
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/asyncToGenerator.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/classCallCheck.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/createClass.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/defineProperty.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/getPrototypeOf.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/inherits.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/helpers/toConsumableArray.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@babel/runtime/regenerator/index.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/@fortawesome/fontawesome-free/js/all.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/stats.js/build/stats.min.js: Module is not an ECMAScript module */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/build/three.module.js: Module ./node_modules/three/build/three.module.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/loaders/GLTFLoader.js: Module ./node_modules/three/examples/jsm/loaders/GLTFLoader.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/postprocessing/EffectComposer.js: Module ./node_modules/three/examples/jsm/postprocessing/EffectComposer.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/postprocessing/RenderPass.js: Module ./node_modules/three/examples/jsm/postprocessing/RenderPass.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/postprocessing/SSAOPass.js: Module ./node_modules/three/examples/jsm/postprocessing/SSAOPass.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/postprocessing/ShaderPass.js: Module ./node_modules/three/examples/jsm/postprocessing/ShaderPass.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/renderers/CSS3DRenderer.js: Module ./node_modules/three/examples/jsm/renderers/CSS3DRenderer.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! ModuleConcatenation bailout: Cannot concat with ./node_modules/three/examples/jsm/shaders/FilmShader.js: Module ./node_modules/three/examples/jsm/shaders/FilmShader.js is not in the same chunk(s) (expected in chunk(s) main, module is in chunk(s) defaultVendors-1441a7909c08) */
+
+/*! namespace exports */
+
+/*! runtime requirements: __webpack_require__, __webpack_require__.n, __webpack_require__.* */
+
+/*!***********************************!*\
+  !*** ./src/index.ts + 61 modules ***!
+  \***********************************/

@@ -1,0 +1,292 @@
+html,
+body {
+  background: #000;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+canvas {
+  display: block;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 
+====================
+Pre-scene
+====================
+*/
+
+#splash-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+#splash {
+  text-align: center;
+}
+
+#splash p {
+  margin-bottom: 48px;
+}
+
+#splash img {
+  max-width: 100%;
+}
+
+#splash span {
+  display: block;
+  margin-top: 16px;
+}
+
+#splash a {
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+#splash a:hover,
+#splash a:focus {
+  opacity: 1;
+}
+
+#splash button {
+  min-width: 300px;
+  min-height: 60px;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255, 0, 252, 1);
+  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%);
+  border: none;
+  border-radius: 1000px;
+  box-shadow: 12px 12px 24px rgba(255, 0, 252, 0.25);
+  transition: all 0.3s ease-in-out 0s;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  padding: 10px;
+}
+
+#splash button::before {
+  content: "";
+  border-radius: 300px;
+  min-width: calc(300px + 12px);
+  min-height: calc(60px + 12px);
+  border: 6px solid rgba(255, 0, 252, 0.25);
+  box-shadow: 0 0 60px rgba(255, 0, 252, 0.25);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s ease-in-out 0s;
+}
+
+#splash button:hover,
+#splash button:focus {
+  color: #fff;
+  transform: translateY(-6px);
+}
+
+#splash button:hover::before,
+button:focus::before {
+  opacity: 1;
+}
+
+/* 
+====================
+Scene loaded
+====================
+*/
+
+#controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
+
+#controls button {
+  color: white;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 16px;
+  vertical-align: middle;
+  text-align: center;
+  outline: 0;
+  margin: 0;
+  margin-left: 8px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+  transition: opacity 0.25s;
+}
+
+#controls button:hover,
+#controls button:active {
+  opacity: 1;
+}
+
+/* 
+====================
+Screen
+====================
+*/
+
+#lockpointer {
+  height: 5px;
+  width: 5px;
+  background-color: #bbb;
+  border-radius: 50%;
+  position: absolute;
+  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#css-renderer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#screen {
+  opacity: 0.9;
+  color: #fff;
+  user-select: none;
+}
+
+#screen > div {
+  padding: 4px;
+}
+
+#screen .divider {
+  color: #fff;
+  width: 80%;
+  opacity: 0.5;
+}
+
+#speedometer > span:first-child {
+  width: 100%;
+  display: block;
+  opacity: 0.5;
+  font-size: 16px;
+}
+
+#speedometer #speed {
+  width: 100%;
+  font-size: 28px;
+}
+
+#song-metadata {
+  overflow: hidden;
+}
+
+#song-artist {
+  font-size: 16px;
+  width: 100%;
+  display: block;
+  opacity: 0.5;
+}
+
+#song-name {
+  font-size: 24px;
+  white-space: nowrap;
+  display: inline-block;
+  transition: transform 4s;
+}
+
+#song-controls {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#song-controls button {
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+#song-playpause {
+  color: #fff;
+  background: rgba(255, 0, 252, 1) !important;
+  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%) !important;
+  border: none;
+  border-radius: 1000px;
+  width: 40px;
+  height: 40px;
+}
+
+/* 
+====================
+Animations
+====================
+*/
+
+.fade-in {
+  animation: fadeIn ease 3s;
+  -webkit-animation: fadeIn ease 3s;
+  -moz-animation: fadeIn ease 3s;
+  -o-animation: fadeIn ease 3s;
+  -ms-animation: fadeIn ease 3s;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

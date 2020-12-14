@@ -4,15 +4,12 @@ import {
   addSongFrequencyListener,
   SongFrequencyEvent,
 } from "../../events/songFrequency";
-import { addToWindow } from "./../../utils/addToWindow";
-import { SceneSubject } from "./../SceneSubject";
+import { N_BANDS } from "../../utils/constants";
 import { VisualizerShader } from "../shaders/VisualizerShader";
+import { SceneSubject } from "./../SceneSubject";
 
 export class SongVisualizer implements SceneSubject {
   name = "SongVisualizer";
-
-  private static FFT_SIZE = 1024;
-  private static N_BANDS = 16;
 
   private mesh: Mesh;
   private material: ShaderMaterial;
@@ -22,16 +19,9 @@ export class SongVisualizer implements SceneSubject {
   }
 
   async load() {
-    const geometry = new PlaneGeometry(0.15, 0.15, SongVisualizer.N_BANDS * 2);
+    const geometry = new PlaneGeometry(0.15, 0.15, N_BANDS * 2);
     this.material = new ShaderMaterial({
       ...VisualizerShader,
-      defines: {
-        FFT_SIZE: SongVisualizer.FFT_SIZE,
-        N_BANDS: SongVisualizer.N_BANDS,
-      },
-      uniforms: {
-        frequencies: { value: new Float32Array(SongVisualizer.FFT_SIZE) },
-      },
       transparent: true,
     });
 

@@ -13,6 +13,7 @@ import {
 } from "../events/songPlayPause";
 import { addSongSkipListener } from "../events/songSkip";
 import { dispatchSongSpeedEvent } from "../events/songSpeed";
+import { FFT_SIZE } from "../utils/constants";
 import { SongSkipEvent } from "./../events/songSkip";
 
 interface SongAudio extends Song {
@@ -22,7 +23,6 @@ interface SongAudio extends Song {
 class AudioManager {
   private static PLAY_ON_START = true;
   private static CHANGE_INTERVAL = 50;
-  private static FFT_SIZE = 2048;
 
   private songs: SongAudio[];
   private currentSong: number | null;
@@ -94,7 +94,7 @@ class AudioManager {
   private removeVisualization() {
     this.analyser = null;
     dispatchSongFrequencyEvent({
-      frequencyData: new Uint8Array(AudioManager.FFT_SIZE / 2),
+      frequencyData: new Uint8Array(FFT_SIZE / 2),
       averageFrequency: 0,
     });
   }
@@ -124,7 +124,7 @@ class AudioManager {
     this.setNewBPM(song.bpm);
     song.audio.play();
 
-    this.analyser = new AudioAnalyser(song.audio, AudioManager.FFT_SIZE);
+    this.analyser = new AudioAnalyser(song.audio, FFT_SIZE);
 
     dispatchSongPlayPauseEvent({ play: true });
     dispatchSongMetadataEvent({ song: song });

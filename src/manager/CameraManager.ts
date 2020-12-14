@@ -6,9 +6,9 @@ import {
   WindowResizeEvent,
 } from "../events/windowResize";
 import { BetterPointerLockControls } from "../scene/controls/BetterPointerLockControls";
+import { CSS_DISTANCE } from "./../utils/constants";
 
 class CameraManager {
-  private static CSS_DISTANCE = 500;
   private static DEFAULT_FOV = 60;
   private static NEAR = 0.1;
   private static FAR = 500;
@@ -33,7 +33,7 @@ class CameraManager {
       CameraManager.NEAR,
       CameraManager.FAR
     );
-    this.cssCamera.position.z = CameraManager.CSS_DISTANCE;
+    this.cssCamera.position.z = CSS_DISTANCE;
     this.quaternion = new Quaternion();
     this.raycaster = new Raycaster();
     addWindowResizeListener(this.updateSize);

@@ -8,6 +8,7 @@ import {
 } from "three";
 
 import { addToWindow } from "../../utils/addToWindow";
+import { CAR_X_OFFSET, PURPLE } from "../../utils/constants";
 import { loadGLTF } from "../../utils/loadGLTF";
 import { SceneSubject } from "../SceneSubject";
 import { Screen } from "./Screen";
@@ -29,7 +30,6 @@ export class Car implements SceneSubject {
   async load(loadingManager: LoadingManager) {
     this.chassis = await loadGLTF(loadingManager, "models/chassis.gltf");
     await this.screen.load();
-    // this.screen = this.getScreen(this.chassis);
     // Fine tuning the chassis around origin
     this.applyOffset(this.chassis);
     this.chassis.castShadow = true;
@@ -50,7 +50,7 @@ export class Car implements SceneSubject {
   }
 
   private applyOffset(object: Object3D) {
-    object.position.x = 0.345;
+    object.position.x = CAR_X_OFFSET;
     object.position.y = -0.7;
     object.position.z = -0.1;
   }
@@ -70,7 +70,7 @@ export class Car implements SceneSubject {
   }
 
   private getPointLight() {
-    const light = new PointLight(0xff00fc, 0.2);
+    const light = new PointLight(PURPLE, 0.2);
     this.applyOffset(light);
     light.position.y = 0.1;
     light.lookAt(0, -3, -3);

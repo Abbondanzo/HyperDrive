@@ -1,6 +1,7 @@
 import { AmbientLight, HemisphereLight, Object3D, PointLight } from "three";
 
 import { addSongFrequencyListener } from "../../events/songFrequency";
+import { PURPLE, YELLOW } from "../../utils/constants";
 import { SceneSubject } from "../SceneSubject";
 import { SongFrequencyEvent } from "./../../events/songFrequency";
 
@@ -19,7 +20,7 @@ export class Lighting implements SceneSubject {
     this.ambientLight = new AmbientLight(0xffffff, 0.1);
     this.pointLight = new PointLight(0xffffff, 0.1);
     this.pointLight.position.set(1, 2, 3);
-    this.hemisphereLight = new HemisphereLight(0xfccd05, 0xff00fc, 0.1);
+    this.hemisphereLight = new HemisphereLight(YELLOW, PURPLE, 0.1);
     this.hemisphereLight.position.set(0, 50, 0);
   }
 

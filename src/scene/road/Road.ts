@@ -1,5 +1,6 @@
 import { Group, LoadingManager, Object3D } from "three";
 
+import { CAR_X_OFFSET } from "../../utils/constants";
 import { SceneSubject } from "../SceneSubject";
 import { Buildings } from "./Buildings";
 import { Lamps } from "./Lamps";
@@ -19,7 +20,7 @@ export class Road implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     // Offset from car
-    this.group.position.x = 0.345 * 2; // 2x the Car x offset
+    this.group.position.x = CAR_X_OFFSET * 2; // 2x the Car x offset
     this.group.position.y = -1.5;
 
     await Promise.all(

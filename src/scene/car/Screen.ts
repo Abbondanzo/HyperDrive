@@ -3,6 +3,7 @@ import { CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer";
 
 import { SceneSubject } from "./../SceneSubject";
 import { ScreenDOM } from "./ScreenDOM";
+import { SongVisualizer } from "./SongVisualizer";
 
 export class Screen implements SceneSubject {
   name = "Screen";
@@ -12,15 +13,19 @@ export class Screen implements SceneSubject {
 
   private object: Object3D;
   private readonly screenDOM: ScreenDOM;
+  private readonly visualizer: SongVisualizer;
 
   constructor() {
     this.screenDOM = new ScreenDOM();
+    this.visualizer = new SongVisualizer();
   }
 
   async load() {
     this.object = new Object3D();
     const css3dObject = new CSS3DObject(this.screenDOM.div);
     this.object.add(css3dObject);
+
+    await this.visualizer.load();
   }
 
   attach(parent: Object3D) {
@@ -28,6 +33,8 @@ export class Screen implements SceneSubject {
     this.object.updateWorldMatrix(false, true);
     this.screenDOM.setIntersect(parent);
     parent.add(this.object);
+    this.visualizer.attach(parent);
+    this.visualizer.setRotation(this.getXRotation(parent as Mesh));
   }
 
   private copyWorldPosition(source: Mesh, dest: Object3D) {

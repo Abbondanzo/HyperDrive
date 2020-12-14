@@ -3,6 +3,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { SSAOPass } from "three/examples/jsm/postprocessing/SSAOPass";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass";
 import { CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer";
 
 import {
@@ -56,6 +57,9 @@ class SceneManager {
     const ssaoPass = new SSAOPass(this.scene, CameraManager.camera);
     ssaoPass.output = SSAOPass.OUTPUT.SSAO;
     // this.composer.addPass(ssaoPass);
+
+    const filmPass = new FilmPass(0.35, 0.025, 648, 0);
+    // this.composer.addPass(filmPass);
   }
 
   attach(element: HTMLElement) {

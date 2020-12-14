@@ -65,6 +65,7 @@ class CameraManager {
     });
     this.controls.addEventListener("unlock", () => {
       console.log("Controls Unlocked");
+      this.updateCSSCamera();
     });
   }
 }

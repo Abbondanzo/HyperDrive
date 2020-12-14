@@ -1,7 +1,9 @@
-import { Audio } from "three";
+import { Audio, AudioAnalyser } from "three";
 
 import { Song } from "../audio/songs";
+import { addFrameListener } from "../events/frame";
 import { addScreenAttachListener } from "../events/screenAttach";
+import { dispatchSongFrequencyEvent } from "../events/songFrequency";
 import { dispatchSongMetadataEvent } from "../events/songMetadata";
 import { addSongMuteListener, SongMuteEvent } from "../events/songMute";
 import {
@@ -20,18 +22,21 @@ interface SongAudio extends Song {
 class AudioManager {
   private static PLAY_ON_START = true;
   private static CHANGE_INTERVAL = 50;
+  private static FFT_SIZE = 2048;
 
   private songs: SongAudio[];
   private currentSong: number | null;
   private currentBPM: number;
-
+  private analyser: AudioAnalyser | null;
   private bpmTimeout: number | null;
 
   constructor() {
     this.songs = [];
     this.currentBPM = 0;
     this.currentSong = null;
+    this.analyser = null;
     dispatchSongSpeedEvent({ bpm: this.currentBPM });
+    addFrameListener(this.handleFrame);
     addSongPlayPauseListener(this.handlePlayPause);
     addSongMuteListener(this.handleMute);
     addSongSkipListener(this.handleSkip);
@@ -76,12 +81,22 @@ class AudioManager {
     if (this.currentSong !== null && this.songs.length > 0) {
       this.getCurrentAudio()?.pause();
     }
+    this.removeVisualization();
   }
 
   private stop() {
     if (this.isCurrentSongPlaying()) {
       this.getCurrentAudio()?.stop();
+      this.removeVisualization();
     }
+  }
+
+  private removeVisualization() {
+    this.analyser = null;
+    dispatchSongFrequencyEvent({
+      frequencyData: new Uint8Array(AudioManager.FFT_SIZE / 2),
+      averageFrequency: 0,
+    });
   }
 
   private playPrevious() {
@@ -108,6 +123,9 @@ class AudioManager {
     const song = this.songs[this.currentSong];
     this.setNewBPM(song.bpm);
     song.audio.play();
+
+    this.analyser = new AudioAnalyser(song.audio, AudioManager.FFT_SIZE);
+
     dispatchSongPlayPauseEvent({ play: true });
     dispatchSongMetadataEvent({ song: song });
     // Overrides the internal call to three. Need to set isPlaying manually
@@ -157,6 +175,15 @@ class AudioManager {
         this.setNewBPM(newBPM);
       }
     }, AudioManager.CHANGE_INTERVAL);
+  };
+
+  private readonly handleFrame = () => {
+    if (this.analyser !== null) {
+      dispatchSongFrequencyEvent({
+        averageFrequency: this.analyser.getAverageFrequency(),
+        frequencyData: this.analyser.getFrequencyData(),
+      });
+    }
   };
 
   private readonly handlePlayPause = ({ play }: SongPlayPauseEvent) => {

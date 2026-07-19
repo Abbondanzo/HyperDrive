@@ -4,8 +4,8 @@
   "description": "Nostalgia factory",
   "main": "./src/index.ts",
   "scripts": {
-    "build": "NODE_ENV=production webpack --mode=production --progress",
-    "start": "NODE_ENV=development webpack-dev-server --progress",
+    "build": "cross-env NODE_ENV=production webpack --mode=production --progress",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --progress",
     "download-songs": "ts-node --skip-project --compiler-options '{\"esModuleInterop\":true}' ./src/audio/downloader.ts"
   },
   "repository": {
@@ -19,31 +19,39 @@
   ],
   "author": "Peter Abbondanzo, Erin Mittmann",
   "license": "MIT",
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/plugin-transform-runtime": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
-    "@babel/preset-typescript": "^7.12.1",
-    "@types/youtube-dl": "^3.0.0",
-    "babel-loader": "^8.1.0",
-    "copy-webpack-plugin": "^6.3.1",
-    "html-webpack-plugin": "^4.5.0",
+    "@babel/core": "^8.0.1",
+    "@babel/plugin-transform-runtime": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
+    "@babel/preset-typescript": "^8.0.1",
+    "@types/node": "^26.1.1",
+    "@types/three": "^0.185.1",
+    "babel-loader": "^10.1.1",
+    "copy-webpack-plugin": "^14.0.0",
+    "cross-env": "^10.1.0",
+    "html-webpack-plugin": "^5.6.7",
     "raw-loader": "^4.0.2",
     "stats.js": "^0.17.0",
-    "ts-loader": "^8.0.7",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.5",
-    "webpack": "^5.3.2",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0",
-    "youtube-dl": "^3.0.2"
+    "ts-loader": "^9.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "webpack": "^5.108.4",
+    "webpack-cli": "^7.2.1",
+    "webpack-dev-server": "^6.0.0",
+    "youtube-dl-exec": "^3.1.9"
   },
   "engines": {
-    "node": "12.x"
+    "node": "^22.18.0 || >=24.11.0"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
-    "gl-matrix": "^3.3.0",
-    "three": "^0.122.0"
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "gl-matrix": "^3.4.4",
+    "three": "^0.185.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "youtube-dl-exec"
+    ]
   }
 }

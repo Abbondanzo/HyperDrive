@@ -13,6 +13,7 @@ import {
 } from "../events/songPlayPause";
 import { addSongSkipListener } from "../events/songSkip";
 import { dispatchSongSpeedEvent } from "../events/songSpeed";
+import { addSongVolumeListener, SongVolumeEvent } from "../events/songVolume";
 import { FFT_SIZE } from "../utils/constants";
 import { SongSkipEvent } from "./../events/songSkip";
 
@@ -29,16 +30,21 @@ class AudioManager {
   private currentBPM: number;
   private analyser: AudioAnalyser | null;
   private bpmTimeout: number | null;
+  private muted: boolean;
+  private volume: number;
 
   constructor() {
     this.songs = [];
     this.currentBPM = 0;
     this.currentSong = null;
     this.analyser = null;
+    this.muted = false;
+    this.volume = 1;
     dispatchSongSpeedEvent({ bpm: this.currentBPM });
     addFrameListener(this.handleFrame);
     addSongPlayPauseListener(this.handlePlayPause);
     addSongMuteListener(this.handleMute);
+    addSongVolumeListener(this.handleVolume);
     addSongSkipListener(this.handleSkip);
     addScreenAttachListener(this.handleScreenAttach);
   }
@@ -127,6 +133,7 @@ class AudioManager {
       this.playNext();
     };
     song.audio.play();
+    this.applyVolume();
 
     this.analyser = new AudioAnalyser(song.audio, FFT_SIZE);
 
@@ -194,13 +201,18 @@ class AudioManager {
   };
 
   private readonly handleMute = ({ muted }: SongMuteEvent) => {
-    const currentAudio = this.getCurrentAudio();
-    if (muted) {
-      currentAudio?.setVolume(0);
-    } else {
-      currentAudio.setVolume(1);
-    }
+    this.muted = muted;
+    this.applyVolume();
   };
+
+  private readonly handleVolume = ({ volume }: SongVolumeEvent) => {
+    this.volume = volume / 10;
+    this.applyVolume();
+  };
+
+  private applyVolume() {
+    this.getCurrentAudio()?.setVolume(this.muted ? 0 : this.volume);
+  }
 
   private readonly handleSkip = ({ direction }: SongSkipEvent) => {
     if (direction === "forward") {

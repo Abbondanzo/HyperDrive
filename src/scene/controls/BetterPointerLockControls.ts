@@ -3,15 +3,21 @@ import { Camera, Euler, EventDispatcher, Vector3 } from "three";
 import { dispatchLockedMousedownEvent } from "../../events/lockedMousedown";
 import { dispatchLockedMousemoveEvent } from "../../events/lockedMousemove";
 
+interface BetterPointerLockControlsEventMap {
+  change: {};
+  lock: {};
+  unlock: {};
+}
+
 /**
  * A version of PointerLockControls that supports horizontal locking and sensitivity controls.
  * https://threejs.org/docs/#examples/en/controls/PointerLockControls
  */
-export class BetterPointerLockControls extends EventDispatcher {
+export class BetterPointerLockControls extends EventDispatcher<BetterPointerLockControlsEventMap> {
   private static PI_2 = Math.PI / 2;
-  private static CHANGE_EVENT = { type: "change" };
-  private static LOCK_EVENT = { type: "lock" };
-  private static UNLOCK_EVENT = { type: "unlock" };
+  private static CHANGE_EVENT = { type: "change" } as const;
+  private static LOCK_EVENT = { type: "lock" } as const;
+  private static UNLOCK_EVENT = { type: "unlock" } as const;
 
   domElement: HTMLElement;
   isLocked: boolean;

@@ -62,6 +62,7 @@ export class Lamps extends MovingObject implements SceneSubject {
     const spotlight = new SpotLight(0xffffdd);
     spotlight.intensity = 2;
     spotlight.penumbra = 0.5;
+    spotlight.decay = 0;
     const boundingBox = new Box3().setFromObject(lamp);
     const x = boundingBox.min.x;
     const y = boundingBox.max.y;

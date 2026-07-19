@@ -122,17 +122,16 @@ class AudioManager {
   private startCurrentSong() {
     const song = this.songs[this.currentSong];
     this.setNewBPM(song.bpm);
+    song.audio.onEnded = () => {
+      Audio.prototype.onEnded.call(song.audio);
+      this.playNext();
+    };
     song.audio.play();
 
     this.analyser = new AudioAnalyser(song.audio, FFT_SIZE);
 
     dispatchSongPlayPauseEvent({ play: true });
     dispatchSongMetadataEvent({ song: song });
-    // Overrides the internal call to three. Need to set isPlaying manually
-    song.audio.source.onended = () => {
-      song.audio.isPlaying = false;
-      this.playNext();
-    };
   }
 
   private getNextSongIndex(): number {

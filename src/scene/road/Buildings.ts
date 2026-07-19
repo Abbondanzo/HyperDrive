@@ -1,5 +1,5 @@
 import {
-  BoxBufferGeometry,
+  BoxGeometry,
   DynamicDrawUsage,
   InstancedMesh,
   LoadingManager,
@@ -80,11 +80,12 @@ export class Buildings extends MovingObject implements SceneSubject {
   private buildingMesh(texture: Texture): InstancedMesh {
     const baseSize = Buildings.SQUARE_SIZE;
     const minHeight = Buildings.SQUARE_SIZE * Buildings.VERTICAL_SCALE;
-    const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
+    const boxGeometry = new BoxGeometry(baseSize, minHeight, baseSize);
     const material = new MeshBasicMaterial({ map: texture });
     const mesh = new InstancedMesh(boxGeometry, material, this.instanceCount);
     mesh.instanceMatrix.setUsage(DynamicDrawUsage);
-    return new InstancedMesh(boxGeometry, material, this.instanceCount);
+    mesh.frustumCulled = false;
+    return mesh;
   }
 
   private computeRow(zRow: number, iterations: number) {

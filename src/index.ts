@@ -11,10 +11,10 @@ import { buildScene } from "./scene/buildScene";
 
 const launch = async (loadingManager: LoadingManager, withSound: boolean) => {
   const splashContainer = document.getElementById(
-    "splash-container"
+    "splash-container",
   ) as HTMLDivElement;
   const canvasContainer = document.getElementById(
-    "canvas-container"
+    "canvas-container",
   ) as HTMLDivElement;
   SceneManager.attach(canvasContainer);
 
@@ -38,7 +38,7 @@ const launch = async (loadingManager: LoadingManager, withSound: boolean) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const splashContainer = document.getElementById(
-    "splash-container"
+    "splash-container",
   ) as HTMLDivElement;
   displaySplash(splashContainer, launch);
 });

@@ -33,9 +33,11 @@ export class SongVisualizer implements SceneSubject {
     this.material = new ShaderMaterial({
       ...VisualizerShader,
       transparent: true,
+      depthTest: false,
     });
 
     this.mesh = new Mesh(geometry, this.material);
+    this.mesh.renderOrder = 999;
     this.mesh.position.set(0, 0.375, -0.4);
   }
 
@@ -60,6 +62,14 @@ export class SongVisualizer implements SceneSubject {
     const height = 1;
     const width = FFT_SIZE / 2;
     const floatArray = new Float32Array(frequencyData);
-    return new DataTexture(floatArray, width, height, RedFormat, FloatType);
+    const texture = new DataTexture(
+      floatArray,
+      width,
+      height,
+      RedFormat,
+      FloatType,
+    );
+    texture.needsUpdate = true;
+    return texture;
   }
 }

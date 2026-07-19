@@ -71,7 +71,7 @@ module.exports = {
 
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
-    modules: [path.resolve(__dirname, "node_modules")],
+    fallback: { events: require.resolve("events") },
   },
 
   module: {

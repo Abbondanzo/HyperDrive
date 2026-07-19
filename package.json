@@ -6,7 +6,9 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --mode=production --progress",
     "start": "cross-env NODE_ENV=development webpack-dev-server --progress",
-    "download-songs": "ts-node --skip-project --compiler-options '{\"esModuleInterop\":true}' ./src/audio/downloader.ts"
+    "download-songs": "ts-node --skip-project --compiler-options '{\"esModuleInterop\":true}' ./src/audio/downloader.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
@@ -30,7 +32,9 @@
     "babel-loader": "^10.1.1",
     "copy-webpack-plugin": "^14.0.0",
     "cross-env": "^10.1.0",
+    "events": "^3.3.0",
     "html-webpack-plugin": "^5.6.7",
+    "prettier": "^3.9.5",
     "raw-loader": "^4.0.2",
     "stats.js": "^0.17.0",
     "ts-loader": "^9.6.2",

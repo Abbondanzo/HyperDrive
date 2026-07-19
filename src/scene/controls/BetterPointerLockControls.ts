@@ -78,11 +78,11 @@ export class BetterPointerLockControls extends EventDispatcher {
     // up/down
     euler.x = Math.min(
       BetterPointerLockControls.PI_2 - this.minPolarAngle,
-      euler.x
+      euler.x,
     );
     euler.x = Math.max(
       BetterPointerLockControls.PI_2 - this.maxPolarAngle,
-      euler.x
+      euler.x,
     );
     // left/right
     if (this.maxRightAngle !== null) {
@@ -115,22 +115,22 @@ export class BetterPointerLockControls extends EventDispatcher {
     this.domElement.ownerDocument.addEventListener(
       "mousedown",
       this.onMouseDown,
-      false
+      false,
     );
     this.domElement.ownerDocument.addEventListener(
       "mousemove",
       this.onMouseMove,
-      false
+      false,
     );
     this.domElement.ownerDocument.addEventListener(
       "pointerlockchange",
       this.onPointerlockChange,
-      false
+      false,
     );
     this.domElement.ownerDocument.addEventListener(
       "pointerlockerror",
       this.onPointerlockError,
-      false
+      false,
     );
   }
 
@@ -138,22 +138,22 @@ export class BetterPointerLockControls extends EventDispatcher {
     this.domElement.ownerDocument.removeEventListener(
       "mousedown",
       this.onMouseDown,
-      false
+      false,
     );
     this.domElement.ownerDocument.removeEventListener(
       "mousemove",
       this.onMouseMove,
-      false
+      false,
     );
     this.domElement.ownerDocument.removeEventListener(
       "pointerlockchange",
       this.onPointerlockChange,
-      false
+      false,
     );
     this.domElement.ownerDocument.removeEventListener(
       "pointerlockerror",
       this.onPointerlockError,
-      false
+      false,
     );
   }
 

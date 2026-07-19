@@ -7,14 +7,16 @@ import {
   MeshBasicMaterial,
   Object3D,
   Quaternion,
-  RepeatWrapping,
   Texture,
-  TextureLoader,
   Vector3,
 } from "three";
 
 import { addFrameListener, FrameEvent } from "../../events/frame";
 import { SceneSubject } from "../SceneSubject";
+import {
+  SKYSCRAPER_PALETTES,
+  createSkyscraperTexture,
+} from "../../utils/skyscraperTexture";
 import { Lamps } from "./Lamps";
 import { MovingObject } from "./MovingObject";
 import { Pavement } from "./Pavement";
@@ -32,14 +34,15 @@ export class Buildings extends MovingObject implements SceneSubject {
   private static ROTATE_AFFECTED_ROWS = 15;
   private static ROTATE_MIN = Math.PI / 3;
 
+  private static HIDDEN_Y = -10000;
+  private static VARIANTS_PER_PALETTE = 3;
+
   private readonly instanceCount: number;
   private readonly length: number;
   private readonly width: number;
 
-  // Eventually, it will be necessary to pass all materials in an InstancedBufferAttribute
-  // and randomly select from that array to simulate better random buildings
-  private leftInstance: InstancedMesh;
-  private rightInstance: InstancedMesh;
+  private leftInstances: InstancedMesh[];
+  private rightInstances: InstancedMesh[];
 
   // Used to track which z-row in the instances is closest to z=0
   private lastZOffset: number;
@@ -58,19 +61,24 @@ export class Buildings extends MovingObject implements SceneSubject {
   }
 
   async load(loadingManager: LoadingManager) {
-    const texture: Texture = await new TextureLoader(loadingManager).loadAsync(
-      "textures/skyscraper/basic.jpg",
+    const textures = SKYSCRAPER_PALETTES.flatMap((palette) =>
+      Array.from({ length: Buildings.VARIANTS_PER_PALETTE }, () => {
+        const texture = createSkyscraperTexture(palette);
+        texture.repeat.set(1, 2);
+        return texture;
+      }),
     );
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.anisotropy = 16;
-    texture.repeat.set(1, 2);
 
-    this.leftInstance = this.buildingMesh(texture);
-    this.leftInstance.position.x = -Pavement.SQUARE_SIZE * 3;
-
-    this.rightInstance = this.buildingMesh(texture);
-    this.rightInstance.position.x = Pavement.SQUARE_SIZE * 3;
+    this.leftInstances = textures.map((texture) => {
+      const mesh = this.buildingMesh(texture);
+      mesh.position.x = -Pavement.SQUARE_SIZE * 3;
+      return mesh;
+    });
+    this.rightInstances = textures.map((texture) => {
+      const mesh = this.buildingMesh(texture);
+      mesh.position.x = Pavement.SQUARE_SIZE * 3;
+      return mesh;
+    });
 
     for (let length = 0; length < this.length; length++) {
       this.computeRow(length, 0);
@@ -91,6 +99,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private computeRow(zRow: number, iterations: number) {
     // Discardable matrix instance
     const matrix = new Matrix4();
+    const hiddenMatrix = new Matrix4().setPosition(0, Buildings.HIDDEN_Y, 0);
 
     for (let width = 0; width < this.width; width++) {
       let offset = Buildings.FULL_SQUARE_SIZE / 2;
@@ -106,29 +115,43 @@ export class Buildings extends MovingObject implements SceneSubject {
       const z = offset + Buildings.FULL_SQUARE_SIZE * zRow + zIterOffset;
       // Index of the matrix in the instance mesh
       const idx = zRow * this.width + width;
+      // Randomly choose which texture variant this building uses
+      const variantIdx = Math.floor(Math.random() * this.leftInstances.length);
 
-      this.leftInstance.setMatrixAt(
-        idx,
-        matrix.setPosition(new Vector3(-x, y, -z)),
-      );
-      this.rightInstance.setMatrixAt(
-        idx,
-        matrix.setPosition(new Vector3(x, y, -z)),
-      );
+      this.leftInstances.forEach((instance, i) => {
+        instance.setMatrixAt(
+          idx,
+          i === variantIdx
+            ? matrix.setPosition(new Vector3(-x, y, -z))
+            : hiddenMatrix,
+        );
+      });
+      this.rightInstances.forEach((instance, i) => {
+        instance.setMatrixAt(
+          idx,
+          i === variantIdx
+            ? matrix.setPosition(new Vector3(x, y, -z))
+            : hiddenMatrix,
+        );
+      });
     }
 
     // Necessary to recompute entire instance
-    this.leftInstance.instanceMatrix.needsUpdate = true;
-    this.rightInstance.instanceMatrix.needsUpdate = true;
+    this.leftInstances.forEach((instance) => {
+      instance.instanceMatrix.needsUpdate = true;
+    });
+    this.rightInstances.forEach((instance) => {
+      instance.instanceMatrix.needsUpdate = true;
+    });
   }
 
   attach(parent: Object3D) {
-    parent.add(this.leftInstance, this.rightInstance);
+    parent.add(...this.leftInstances, ...this.rightInstances);
   }
 
   private readonly handleFrame = ({ delta }: FrameEvent) => {
     const distance = Lamps.GAP_DISTANCE * this.offsetPerMS * delta;
-    const newOffset = this.leftInstance.position.z + distance;
+    const newOffset = this.leftInstances[0].position.z + distance;
 
     while (newOffset > this.lastZOffset + Buildings.FULL_SQUARE_SIZE * 4) {
       const iterations =
@@ -143,8 +166,12 @@ export class Buildings extends MovingObject implements SceneSubject {
       this.computeRotateO();
     }
 
-    this.leftInstance.position.z = newOffset;
-    this.rightInstance.position.z = newOffset;
+    this.leftInstances.forEach((instance) => {
+      instance.position.z = newOffset;
+    });
+    this.rightInstances.forEach((instance) => {
+      instance.position.z = newOffset;
+    });
   };
 
   private computeRotateO() {
@@ -153,7 +180,7 @@ export class Buildings extends MovingObject implements SceneSubject {
     const offset =
       (this.lastZOffset +
         Buildings.FULL_SQUARE_SIZE * 4 -
-        this.leftInstance.position.z) /
+        this.leftInstances[0].position.z) /
       Buildings.FULL_SQUARE_SIZE;
 
     const stepSize = 1 / Buildings.ROTATE_AFFECTED_ROWS;
@@ -169,8 +196,12 @@ export class Buildings extends MovingObject implements SceneSubject {
         theta = pctOffset * Buildings.ROTATE_MIN;
       }
 
-      this.applyRowRotation(this.leftInstance, zRow, theta);
-      this.applyRowRotation(this.rightInstance, zRow, -theta);
+      this.leftInstances.forEach((instance) =>
+        this.applyRowRotation(instance, zRow, theta),
+      );
+      this.rightInstances.forEach((instance) =>
+        this.applyRowRotation(instance, zRow, -theta),
+      );
     }
   }
 
@@ -199,6 +230,4 @@ export class Buildings extends MovingObject implements SceneSubject {
 
     instancedMesh.instanceMatrix.needsUpdate = true;
   }
-
-  private;
 }

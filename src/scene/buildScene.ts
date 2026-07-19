@@ -13,7 +13,7 @@ import { SceneSubject } from "./SceneSubject";
 
 export const buildScene = async (
   scene: Scene,
-  loadingManager: LoadingManager
+  loadingManager: LoadingManager,
 ): Promise<boolean> => {
   const sceneSubjects: SceneSubject[] = [
     new Songs(CameraManager.camera),
@@ -28,8 +28,8 @@ export const buildScene = async (
   try {
     const loadTimes = await Promise.all(
       sceneSubjects.map((subject) =>
-        measurePromise(subject.name, () => subject.load(loadingManager))
-      )
+        measurePromise(subject.name, () => subject.load(loadingManager)),
+      ),
     );
     if (isDevelopment()) {
       console.info(loadTimes);
@@ -46,7 +46,7 @@ export const buildScene = async (
 
 const measurePromise = (
   name: string,
-  fn: () => Promise<any>
+  fn: () => Promise<any>,
 ): Promise<[string, number]> => {
   const onPromiseDone = (): [string, number] => [
     name,

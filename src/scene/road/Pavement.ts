@@ -38,7 +38,7 @@ export class Pavement extends MovingObject implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     this.texture = await new TextureLoader(loadingManager).loadAsync(
-      "textures/road/pavement.png"
+      "textures/road/pavement.png",
     );
     // Apply wrapping to texture so it fits in the correct scale. Width is always greater
     this.texture.wrapS = RepeatWrapping;

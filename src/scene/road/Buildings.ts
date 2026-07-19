@@ -59,7 +59,7 @@ export class Buildings extends MovingObject implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     const texture: Texture = await new TextureLoader(loadingManager).loadAsync(
-      "textures/skyscraper/basic.jpg"
+      "textures/skyscraper/basic.jpg",
     );
     texture.wrapS = RepeatWrapping;
     texture.wrapT = RepeatWrapping;
@@ -108,11 +108,11 @@ export class Buildings extends MovingObject implements SceneSubject {
 
       this.leftInstance.setMatrixAt(
         idx,
-        matrix.setPosition(new Vector3(-x, y, -z))
+        matrix.setPosition(new Vector3(-x, y, -z)),
       );
       this.rightInstance.setMatrixAt(
         idx,
-        matrix.setPosition(new Vector3(x, y, -z))
+        matrix.setPosition(new Vector3(x, y, -z)),
       );
     }
 
@@ -176,7 +176,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private applyRowRotation(
     instancedMesh: InstancedMesh,
     zRow: number,
-    theta: number
+    theta: number,
   ) {
     const position = new Vector3();
     const quaternion = new Quaternion();

@@ -46,7 +46,7 @@ export class SongMetadata {
     element.style.transform = `translateX(-${diff + 8}px)`;
     this.songNameOffset = window.setTimeout(
       () => this.hideNameDiff(element),
-      SongMetadata.NAME_SCROLL_OFFSET_MS
+      SongMetadata.NAME_SCROLL_OFFSET_MS,
     );
   };
 
@@ -54,7 +54,7 @@ export class SongMetadata {
     element.style.transform = `translateX(0px)`;
     this.songNameOffset = window.setTimeout(
       () => this.showNameDiff(element),
-      SongMetadata.NAME_SCROLL_OFFSET_MS
+      SongMetadata.NAME_SCROLL_OFFSET_MS,
     );
   };
 

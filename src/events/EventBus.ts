@@ -40,7 +40,7 @@ class EventBus {
     }
     this.listeners[type] = this.listeners[type].filter(
       ({ type: t, callback: c, scope: s }) =>
-        !(type === t && callback === c && scope === s)
+        !(type === t && callback === c && scope === s),
     );
   }
 

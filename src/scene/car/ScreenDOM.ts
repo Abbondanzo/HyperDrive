@@ -54,7 +54,7 @@ export class ScreenDOM {
   private readonly checkScreenIntersect = () => {
     if (this.intersectObject === null) return;
     const intersects = CameraManager.raycaster.intersectObject(
-      this.intersectObject
+      this.intersectObject,
     );
     if (intersects.length > 0) {
       this.lockPointer.classList.remove("hidden");

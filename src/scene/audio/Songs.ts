@@ -32,7 +32,7 @@ export class Songs implements SceneSubject {
 
     setTimeout(
       () => this.loadAllSongsInBackground(loader, firstSong),
-      Songs.LOAD_REMAINDER_DELAY
+      Songs.LOAD_REMAINDER_DELAY,
     );
   }
 
@@ -47,13 +47,13 @@ export class Songs implements SceneSubject {
 
   private loadAllSongsInBackground = async (
     loader: AudioLoader,
-    songToSkip: Song & { audio: Audio }
+    songToSkip: Song & { audio: Audio },
   ) => {
     const remainingSongs = songs.filter(
-      (song) => song.name !== songToSkip.name
+      (song) => song.name !== songToSkip.name,
     );
     const loadedSongs = await Promise.all(
-      remainingSongs.map((song) => this.loadSong(loader, song))
+      remainingSongs.map((song) => this.loadSong(loader, song)),
     );
     const newSongList = [songToSkip, ...loadedSongs];
     AudioManager.attach(newSongList);

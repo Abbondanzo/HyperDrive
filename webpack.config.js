@@ -37,12 +37,12 @@ module.exports = {
   stats,
 
   devServer: {
-    publicPath: "/",
     port: 3000,
     hot: true,
-    inline: true,
-    contentBase: path.join(__dirname, "public"),
-    stats,
+    static: {
+      directory: path.join(__dirname, "public"),
+      publicPath: "/",
+    },
   },
 
   watchOptions: {
@@ -71,7 +71,7 @@ module.exports = {
 
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
-    modules: [path.resolve(__dirname, "node_modules")],
+    fallback: { events: require.resolve("events") },
   },
 
   module: {
@@ -89,7 +89,9 @@ module.exports = {
   plugins: [
     !isDevelopment &&
       new CopyWebpackPlugin({
-        patterns: [{ from: "public" }],
+        patterns: [
+          { from: "public", globOptions: { ignore: ["**/index.html"] } },
+        ],
       }),
     new HtmlWebpackPlugin({
       template: "./public/index.html",

@@ -3,12 +3,12 @@ import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export const loadGLTF = (
   loadingManager: LoadingManager,
-  path: string
+  path: string,
 ): Promise<Group> => {
   return new Promise(
     (
       resolve: (object: Group) => void,
-      reject: (err: Error | ErrorEvent) => void
+      reject: (err: Error | ErrorEvent) => void,
     ) => {
       const gltfLoader = new GLTFLoader(loadingManager);
       gltfLoader.load(
@@ -21,8 +21,8 @@ export const loadGLTF = (
         undefined,
         (error: Error | ErrorEvent) => {
           reject(error);
-        }
+        },
       );
-    }
+    },
   );
 };

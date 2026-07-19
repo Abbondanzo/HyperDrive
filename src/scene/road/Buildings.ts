@@ -1,5 +1,5 @@
 import {
-  BoxBufferGeometry,
+  BoxGeometry,
   DynamicDrawUsage,
   InstancedMesh,
   LoadingManager,
@@ -59,7 +59,7 @@ export class Buildings extends MovingObject implements SceneSubject {
 
   async load(loadingManager: LoadingManager) {
     const texture: Texture = await new TextureLoader(loadingManager).loadAsync(
-      "textures/skyscraper/basic.jpg"
+      "textures/skyscraper/basic.jpg",
     );
     texture.wrapS = RepeatWrapping;
     texture.wrapT = RepeatWrapping;
@@ -80,11 +80,12 @@ export class Buildings extends MovingObject implements SceneSubject {
   private buildingMesh(texture: Texture): InstancedMesh {
     const baseSize = Buildings.SQUARE_SIZE;
     const minHeight = Buildings.SQUARE_SIZE * Buildings.VERTICAL_SCALE;
-    const boxGeometry = new BoxBufferGeometry(baseSize, minHeight, baseSize);
+    const boxGeometry = new BoxGeometry(baseSize, minHeight, baseSize);
     const material = new MeshBasicMaterial({ map: texture });
     const mesh = new InstancedMesh(boxGeometry, material, this.instanceCount);
     mesh.instanceMatrix.setUsage(DynamicDrawUsage);
-    return new InstancedMesh(boxGeometry, material, this.instanceCount);
+    mesh.frustumCulled = false;
+    return mesh;
   }
 
   private computeRow(zRow: number, iterations: number) {
@@ -108,11 +109,11 @@ export class Buildings extends MovingObject implements SceneSubject {
 
       this.leftInstance.setMatrixAt(
         idx,
-        matrix.setPosition(new Vector3(-x, y, -z))
+        matrix.setPosition(new Vector3(-x, y, -z)),
       );
       this.rightInstance.setMatrixAt(
         idx,
-        matrix.setPosition(new Vector3(x, y, -z))
+        matrix.setPosition(new Vector3(x, y, -z)),
       );
     }
 
@@ -176,7 +177,7 @@ export class Buildings extends MovingObject implements SceneSubject {
   private applyRowRotation(
     instancedMesh: InstancedMesh,
     zRow: number,
-    theta: number
+    theta: number,
   ) {
     const position = new Vector3();
     const quaternion = new Quaternion();

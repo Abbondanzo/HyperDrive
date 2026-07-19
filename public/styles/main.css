@@ -67,7 +67,11 @@ Pre-scene
   font-weight: 700;
   color: #fff;
   background: rgba(255, 0, 252, 1);
-  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(252, 205, 5, 1) 0%,
+    rgba(255, 0, 252, 1) 100%
+  );
   border: none;
   border-radius: 1000px;
   box-shadow: 12px 12px 24px rgba(255, 0, 252, 0.25);
@@ -226,7 +230,11 @@ Screen
 #song-playpause {
   color: #fff;
   background: rgba(255, 0, 252, 1) !important;
-  background: linear-gradient(90deg, rgba(252, 205, 5, 1) 0%, rgba(255, 0, 252, 1) 100%) !important;
+  background: linear-gradient(
+    90deg,
+    rgba(252, 205, 5, 1) 0%,
+    rgba(255, 0, 252, 1) 100%
+  ) !important;
   border: none;
   border-radius: 1000px;
   width: 40px;

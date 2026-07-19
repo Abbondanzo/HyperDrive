@@ -24,7 +24,7 @@ export class Road implements SceneSubject {
     this.group.position.y = -1.5;
 
     await Promise.all(
-      this.subjects.map((object) => object.load(loadingManager))
+      this.subjects.map((object) => object.load(loadingManager)),
     );
   }
 

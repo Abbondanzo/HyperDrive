@@ -17,6 +17,8 @@ import { SongFrequencyEvent } from "./../../events/songFrequency";
 import { CRTShader } from "./../shaders/CRTShader";
 
 export class Composer {
+  private static PEAK_FREQUENCY = 30;
+
   private readonly composer: EffectComposer;
 
   private readonly ssaoPass: SSAOPass;
@@ -72,7 +74,7 @@ export class Composer {
   private readonly handleSongFrequency = ({
     averageFrequency,
   }: SongFrequencyEvent) => {
-    const increase = (0.3 * averageFrequency) / 255;
-    this.crtPass.uniforms["opacity"].value = 0.1 + increase;
+    const pct = Math.min(averageFrequency / Composer.PEAK_FREQUENCY, 1);
+    this.crtPass.uniforms["opacity"].value = 0.1 + pct * 0.5;
   };
 }

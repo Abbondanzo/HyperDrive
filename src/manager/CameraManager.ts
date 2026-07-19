@@ -1,4 +1,4 @@
-import { PerspectiveCamera, Quaternion, Raycaster } from "three";
+import { PerspectiveCamera, Quaternion, Raycaster, Vector2 } from "three";
 
 import { addLockedMousemoveListener } from "../events/lockedMousemove";
 import {
@@ -19,19 +19,20 @@ class CameraManager {
 
   private controls: BetterPointerLockControls;
   private readonly quaternion: Quaternion;
+  private readonly screenCenter = new Vector2(0, 0);
 
   constructor() {
     this.camera = new PerspectiveCamera(
       CameraManager.DEFAULT_FOV,
       1,
       CameraManager.NEAR,
-      CameraManager.FAR
+      CameraManager.FAR,
     );
     this.cssCamera = new PerspectiveCamera(
       CameraManager.DEFAULT_FOV,
       1,
       CameraManager.NEAR,
-      CameraManager.FAR
+      CameraManager.FAR,
     );
     this.cssCamera.position.z = CSS_DISTANCE;
     this.quaternion = new Quaternion();
@@ -50,7 +51,7 @@ class CameraManager {
   private readonly updateCSSCamera = () => {
     this.camera.getWorldQuaternion(this.quaternion);
     this.cssCamera.setRotationFromQuaternion(this.quaternion);
-    this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+    this.raycaster.setFromCamera(this.screenCenter, this.camera);
   };
 
   initializeControls(element: HTMLElement) {

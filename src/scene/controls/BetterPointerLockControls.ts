@@ -3,15 +3,21 @@ import { Camera, Euler, EventDispatcher, Vector3 } from "three";
 import { dispatchLockedMousedownEvent } from "../../events/lockedMousedown";
 import { dispatchLockedMousemoveEvent } from "../../events/lockedMousemove";
 
+interface BetterPointerLockControlsEventMap {
+  change: {};
+  lock: {};
+  unlock: {};
+}
+
 /**
  * A version of PointerLockControls that supports horizontal locking and sensitivity controls.
  * https://threejs.org/docs/#examples/en/controls/PointerLockControls
  */
-export class BetterPointerLockControls extends EventDispatcher {
+export class BetterPointerLockControls extends EventDispatcher<BetterPointerLockControlsEventMap> {
   private static PI_2 = Math.PI / 2;
-  private static CHANGE_EVENT = { type: "change" };
-  private static LOCK_EVENT = { type: "lock" };
-  private static UNLOCK_EVENT = { type: "unlock" };
+  private static CHANGE_EVENT = { type: "change" } as const;
+  private static LOCK_EVENT = { type: "lock" } as const;
+  private static UNLOCK_EVENT = { type: "unlock" } as const;
 
   domElement: HTMLElement;
   isLocked: boolean;
@@ -78,11 +84,11 @@ export class BetterPointerLockControls extends EventDispatcher {
     // up/down
     euler.x = Math.min(
       BetterPointerLockControls.PI_2 - this.minPolarAngle,
-      euler.x
+      euler.x,
     );
     euler.x = Math.max(
       BetterPointerLockControls.PI_2 - this.maxPolarAngle,
-      euler.x
+      euler.x,
     );
     // left/right
     if (this.maxRightAngle !== null) {
@@ -115,22 +121,22 @@ export class BetterPointerLockControls extends EventDispatcher {
     this.domElement.ownerDocument.addEventListener(
       "mousedown",
       this.onMouseDown,
-      false
+      false,
     );
     this.domElement.ownerDocument.addEventListener(
       "mousemove",
       this.onMouseMove,
-      false
+      false,
     );
     this.domElement.ownerDocument.addEventListener(
       "pointerlockchange",
       this.onPointerlockChange,
-      false
+      false,
     );
     this.domElement.ownerDocument.addEventListener(
       "pointerlockerror",
       this.onPointerlockError,
-      false
+      false,
     );
   }
 
@@ -138,22 +144,22 @@ export class BetterPointerLockControls extends EventDispatcher {
     this.domElement.ownerDocument.removeEventListener(
       "mousedown",
       this.onMouseDown,
-      false
+      false,
     );
     this.domElement.ownerDocument.removeEventListener(
       "mousemove",
       this.onMouseMove,
-      false
+      false,
     );
     this.domElement.ownerDocument.removeEventListener(
       "pointerlockchange",
       this.onPointerlockChange,
-      false
+      false,
     );
     this.domElement.ownerDocument.removeEventListener(
       "pointerlockerror",
       this.onPointerlockError,
-      false
+      false,
     );
   }
 

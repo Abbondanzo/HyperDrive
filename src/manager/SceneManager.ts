@@ -40,7 +40,7 @@ class SceneManager {
     this.composer = new Composer(
       this.scene,
       CameraManager.camera,
-      this.renderer
+      this.renderer,
     );
 
     addFrameListener(this.update);

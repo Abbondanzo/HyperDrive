@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "declaration": false,
     "esModuleInterop": true,
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "outDir": "dist",
+    "rootDir": "src",
     "skipLibCheck": true,
     "sourceMap": true,
+    "strict": false,
     "target": "esnext",
-    "typeRoots": ["./types/", "./node_modules/@types/"]
+    "typeRoots": ["./types/", "./node_modules/@types/"],
+    "types": ["node"]
   },
   "include": ["src"]
 }

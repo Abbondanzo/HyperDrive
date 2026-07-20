@@ -5,7 +5,6 @@ import { isDevelopment } from "../utils/isDevelopment";
 import { Songs } from "./audio/Songs";
 import { SkyBox } from "./background/SkyBox";
 import { Car } from "./car/Car";
-import { Cube } from "./cube/Cube";
 import { Lighting } from "./environment/Lighting";
 import { Mountains } from "./environment/Mountains";
 import { Road } from "./road/Road";
@@ -19,7 +18,6 @@ export const buildScene = async (
     new Songs(CameraManager.camera),
     new SkyBox(),
     new Car(CameraManager.camera),
-    new Cube(),
     new Lighting(),
     new Mountains(),
     new Road(),

@@ -11,6 +11,7 @@ export class Lamps extends MovingObject implements SceneSubject {
 
   static GAP_DISTANCE = 80;
   private static TOTAL_DISTANCE = 200;
+  private static LIGHT_COLOR = "#f8ddff";
 
   private lampModel: Group;
   private lampsGroup: Group;
@@ -59,8 +60,9 @@ export class Lamps extends MovingObject implements SceneSubject {
   }
 
   private addLightToLamp(lamp: Group) {
-    const spotlight = new SpotLight(0xffffdd);
-    spotlight.intensity = 2;
+    const spotlight = new SpotLight(Lamps.LIGHT_COLOR);
+    spotlight.intensity = 5;
+    spotlight.angle = Math.PI / 2.5;
     spotlight.penumbra = 0.5;
     spotlight.decay = 0;
     const boundingBox = new Box3().setFromObject(lamp);

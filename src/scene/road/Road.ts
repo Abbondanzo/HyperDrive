@@ -3,6 +3,7 @@ import { Group, LoadingManager, Object3D } from "three";
 import { CAR_X_OFFSET } from "../../utils/constants";
 import { SceneSubject } from "../SceneSubject";
 import { Buildings } from "./Buildings";
+import { Guardrail } from "./Guardrail";
 import { Lamps } from "./Lamps";
 import { Pavement } from "./Pavement";
 
@@ -13,7 +14,12 @@ export class Road implements SceneSubject {
   private readonly group: Group;
 
   constructor() {
-    this.subjects = [new Lamps(), new Pavement(), new Buildings()];
+    this.subjects = [
+      new Lamps(),
+      new Pavement(),
+      new Buildings(),
+      new Guardrail(),
+    ];
     this.group = new Group();
     this.group.name = "Road";
   }

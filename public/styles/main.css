@@ -241,6 +241,34 @@ Screen
   height: 40px;
 }
 
+#volume-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+#volume-control button {
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.25s;
+}
+
+#volume-control button:hover,
+#volume-control button:active {
+  opacity: 1;
+}
+
+#volume-level {
+  color: #fff;
+  opacity: 0.8;
+  min-width: 16px;
+  text-align: center;
+}
+
 /* 
 ====================
 Animations

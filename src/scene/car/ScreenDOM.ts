@@ -6,6 +6,7 @@ import CameraManager from "../../manager/CameraManager";
 import { SongControls } from "./SongControls";
 import { SongMetadata } from "./SongMetadata";
 import { Speedometer } from "./Speedometer";
+import { VolumeControl } from "./VolumeControl";
 
 export class ScreenDOM {
   readonly div: HTMLDivElement;
@@ -16,6 +17,7 @@ export class ScreenDOM {
   private readonly speedometer: Speedometer;
   private readonly metadata: SongMetadata;
   private readonly controls: SongControls;
+  private readonly volumeControl: VolumeControl;
 
   constructor() {
     this.div = document.createElement("div");
@@ -36,6 +38,9 @@ export class ScreenDOM {
     //
     this.controls = new SongControls();
     this.div.appendChild(this.controls.div);
+    //
+    this.volumeControl = new VolumeControl();
+    this.div.appendChild(this.volumeControl.div);
     // Subscribers
     dispatchScreenAttachEvent({ screen: this.div });
     addLockedMousemoveListener(this.checkScreenIntersect);

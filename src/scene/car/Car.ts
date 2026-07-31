@@ -70,7 +70,9 @@ export class Car implements SceneSubject {
   }
 
   private getPointLight() {
-    const light = new PointLight(PURPLE, 0.2);
+    const light = new PointLight(PURPLE, 1);
+    light.decay = 0;
+    light.distance = 3;
     this.applyOffset(light);
     light.position.y = 0.1;
     light.lookAt(0, -3, -3);
